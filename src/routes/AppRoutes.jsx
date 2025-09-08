@@ -1,14 +1,15 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import Home from '../pages/Home'
+import ContainerGeral from '../pages/Outlet';
 
 const AppRoutes = () => {
     return (
-        <BrowserRouter>
 
-            <Routes>
+        <Routes>
+            <Route element={<ContainerGeral />} >
                 <Route element={<Home />} path='/' />
-            </Routes>
-        </BrowserRouter>
+            </Route>
+        </Routes>
     )
 }
 export default AppRoutes;
