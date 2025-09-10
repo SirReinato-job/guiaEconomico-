@@ -5,7 +5,13 @@ export default function ContainerGeral() {
   return (
     <Container>
       <NavContainer>
-        <h1>aaaaaaaaaa</h1>
+        <div className="bg-card">
+          <Logo />
+          <span>Novo Gasto</span>
+          <span>Menu Item 2</span>
+          <span>Menu Item 3</span>
+          <span>Menu Item 4</span>
+        </div>
       </NavContainer>
 
       <MainContainer>
@@ -13,8 +19,7 @@ export default function ContainerGeral() {
       </MainContainer>
 
       <Footer>
-        <span>Footer</span>
-        <Logo />
+        <p>Desenvolvido by SirReinato</p>
       </Footer>
     </Container>
   );
@@ -28,18 +33,30 @@ const Container = styled.div`
     "nav main"
     "footer footer";
   height: 100vh;
+  box-sizing: border-box;
 `;
 
 const NavContainer = styled.div`
+  display: flex;
   grid-area: nav;
-  background-color: red;
+  box-sizing: border-box;
   color: white;
-  padding: 1rem;
+  padding: 60px 8px;
+
+  .bg-card{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 16px 8px;
+    background-color: ${({ theme }) => theme.colors.cardsBg};
+    border-radius: 16px;
+  }
 `;
 
 const MainContainer = styled.div`
   grid-area: main;
-  background-color: blue;
   overflow-y: auto;
   padding: 1rem;
 `;
@@ -49,14 +66,15 @@ const Footer = styled.div`
   background-color: #333;
   color: white;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  padding: 0.5rem 1rem;
+ 
 `;
 
 const Logo = styled.div`
-  width: 30px;
-  height: 30px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: linear-gradient(to right, red, blue);
+  background: linear-gradient(to right, #820ad1, #00b3ff);
 `;
