@@ -1,7 +1,8 @@
 import styled from "styled-components";
 import Card from "../../components/Card";
+import GraficoComparativo from "../../components/CardComparativo";
 
-export default function Home({ }) {
+export default function Home() {
     return (
         <ContainerGeralHome>
             <HeaderContainer>
@@ -24,10 +25,7 @@ export default function Home({ }) {
             <ContainerMainCards>
                 <Card>
                     <h2>Financeiro do Mês - </h2>
-                    <p>Entrada</p>
-                    <p>Saída</p>
-                    <p>Total</p>
-                    <span>Vou colocar a espectativa para o método 50/30/20: 50% necessidades, 30% desejos, 20% poupança/investimento.</span>
+                    <GraficoComparativo />
                 </Card>
                 <Card>
                     <h2>Cartões</h2>
@@ -48,30 +46,29 @@ export default function Home({ }) {
                 </Card>
             </ContainerMainCards>
         </ContainerGeralHome>
-    )
+    );
 }
 
 const ContainerGeralHome = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px; 
+    gap: 8px;
     padding: 8px 24px;
-    `;
+`;
 const HeaderContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
-        
-    `;
+`;
 
 const ContainerMainCards = styled.div`
-    width: 100%; 
+    width: 100%;
     flex-wrap: wrap;
     display: flex;
     justify-content: space-between;
     align-items: center;
     row-gap: 16px;
-    `;
+`;
