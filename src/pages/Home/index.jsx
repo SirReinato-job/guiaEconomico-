@@ -7,30 +7,28 @@ export default function Home() {
         <ContainerGeralHome>
             <HeaderContainer>
                 <Card $widthSm $heightSm>
-                    <h2>Nubank - R$ 320,51</h2>
-                    <p>Alura</p>
-                    <p>Vivo</p>
+                    <h2>Saldo</h2>
+                    <p>R$ 4.250,00</p>
                 </Card>
                 <Card $widthSm $heightSm>
-                    <h2>BB - R$ 320,51</h2>
-                    <p>Smat Fit</p>
-                    <p>Gran</p>
+                    <h2>Entradas</h2>
+                    <p>R$ 20,00</p>
                 </Card>
                 <Card $widthSm $heightSm>
-                    <h2>Picpay - R$ 320,51</h2>
-                    <p>Gastos da Nega</p>
+                    <h2>Despesas</h2>
+                    <p>R$ 120,00</p>
                 </Card>
             </HeaderContainer>
 
             <ContainerMainCards>
                 <Card>
-                    <h2>Financeiro do Mês - </h2>
-                    <GraficoComparativo />
-                </Card>
-                <Card>
                     <h2>Cartões</h2>
                     <p>Fixos</p>
                     <p>Total</p>
+                </Card>
+                <Card>
+                    <h2>Financeiro do Mês 50/30/20 </h2>
+                    <GraficoComparativo />
                 </Card>
                 <Card>
                     <h2>Essenciais</h2>
