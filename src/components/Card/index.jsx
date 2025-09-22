@@ -60,3 +60,4 @@ const Destaque = styled.h2`
     $bgAlert ? "linear-gradient(to right, #820ad1, #00b3ff)" : "transparent"};
     color: ${({ theme }) => theme.colors.valor};
 `;
+
