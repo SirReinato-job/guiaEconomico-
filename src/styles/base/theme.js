@@ -17,5 +17,7 @@ export const theme = {
     textSecondary: '#777777',
     disabled: '#cccccc',
     hover: '#f0f0f0',
+    valor: '#fffacd'
+
   }
 }

@@ -8,7 +8,7 @@ const GlobalStyle = createGlobalStyle`
 
   html, body, #root {
     height: 100%;
-    font-family: 'Inter', sans-serif;
+    font-family: "DynaPuff", system-ui;
     background-color: ${({ theme }) => theme.colors.background};
     color: ${({ theme }) => theme.colors.textPrimary};
   }
