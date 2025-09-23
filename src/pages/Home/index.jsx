@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import Card from "../../components/Card";
 import GraficoComparativo from "../../components/CardComparativo";
+import { CardSaldoGrafico } from "../../components/CardGraficoLinha";
 
 export default function Home() {
     return (
@@ -9,16 +10,19 @@ export default function Home() {
                 <Card $widthSm $heightSm $bgAlert
                     titulo="Saldo"
                     destaque="R$ 4.250,00">
+                    <CardSaldoGrafico />
                 </Card>
                 <Card $widthSm $heightSm $bgAlert
                     titulo="Entradas"
                     destaque="R$ 20,00"
                 >
+                    <CardSaldoGrafico />
 
                 </Card>
                 <Card $widthSm $heightSm $bgAlert
                     titulo="Despesas"
                     destaque="R$ R$ 120,00" >
+                    <CardSaldoGrafico />
 
                 </Card>
             </HeaderContainer>
@@ -29,7 +33,7 @@ export default function Home() {
                     destaque="R$ 1.200,00"
                     textTitulo={["Nubank", "Picpay", "Banco do Brasil"]}
                     textDescricao={["R$ 400,00", "R$ 300,00", "R$ 500,00"]}
-                    >
+                >
                 </Card>
                 <Card $bgAlert
                     titulo="Financeiro do Mês"
@@ -41,13 +45,13 @@ export default function Home() {
                     destaque="R$ 800,00"
                     textTitulo={["Aluguel", "Água", "Manutenção"]}
                     textDescricao={["R$ 450,00", "R$ 80,00", "R$ 270,00"]}
-                    />
+                />
                 <Card $bgAlert
                     titulo="Evitáveis"
                     destaque="R$ 450,00"
                     textTitulo={["Uber", "Caixinhas", "Alimentação fora de casa"]}
                     textDescricao={["R$ 150,00", "R$ 50,00", "R$ 250,00"]}
-                    >
+                >
                 </Card>
             </ContainerMainCards>
         </ContainerGeralHome>
