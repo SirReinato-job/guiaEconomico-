@@ -7,10 +7,12 @@ export default function ContainerGeral() {
       <NavContainer>
         <div className="bg-card">
           <Logo />
-          <span>Novo Gasto</span>
-          <span>Menu Item 2</span>
-          <span>Menu Item 3</span>
-          <span>Menu Item 4</span>
+          <span>➕ Novo Gasto</span>
+          <span>📁Gastos por Cartão</span>
+          <span>📈 Relatórios</span>
+          <span>🧮 Comparativo </span>
+          <span>🧠Insights Financeiros</span>
+          <span>⚙️ Configurações</span>
         </div>
       </NavContainer>
 
@@ -19,7 +21,7 @@ export default function ContainerGeral() {
       </MainContainer>
 
       <Footer>
-        <p>Desenvolvido by SirReinato</p>
+        <p className="textFooter">Desenvolvido by SirReinato</p>
       </Footer>
     </Container>
   );
@@ -63,13 +65,18 @@ const MainContainer = styled.div`
 
 const Footer = styled.div`
   grid-area: footer;
-  background-color: #333;
+  background-color: ${({ theme }) => theme.colors.cardsBg};
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
- 
+  width: 100%;
+
+  .textFooter {
+    padding-top: 5px;
+    text-align: center;
+  }
 `;
 
 const Logo = styled.div`

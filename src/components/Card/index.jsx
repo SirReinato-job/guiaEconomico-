@@ -91,11 +91,13 @@ width: 100%;
 `;
 
 const TextTitulo = styled.h3`
-  font-size: .8em;
+  font-size: .9em;
+  letter-spacing: .05em;
   font-weight: bold;
 
 `
 const TextDescricao = styled.p`
-  font-size: .7em;
+  font-size: .8em;
+  letter-spacing: .05em;
   color: ${({ theme }) => theme.colors.border};
 `;
