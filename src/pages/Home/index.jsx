@@ -26,27 +26,28 @@ export default function Home() {
             <ContainerMainCards>
                 <Card $bgAlert
                     titulo="Cartões"
-                    destaque="R$ 1.200,00">
-                    <p>Fixos</p>
-                    <p>Total</p>
+                    destaque="R$ 1.200,00"
+                    textTitulo={["Nubank", "Picpay", "Banco do Brasil"]}
+                    textDescricao={["R$ 400,00", "R$ 300,00", "R$ 500,00"]}
+                    >
                 </Card>
                 <Card $bgAlert
                     titulo="Financeiro do Mês"
                     destaque="50/30/20">
                     <GraficoComparativo />
                 </Card>
-                <Card>
-                    <h2>Essenciais</h2>
-                    <p>Aluguel</p>
-                    <p>Água</p>
-                    <p>Manutenção</p>
-                </Card>
+                <Card $bgAlert
+                    titulo="Essenciais"
+                    destaque="R$ 800,00"
+                    textTitulo={["Aluguel", "Água", "Manutenção"]}
+                    textDescricao={["R$ 450,00", "R$ 80,00", "R$ 270,00"]}
+                    />
                 <Card $bgAlert
                     titulo="Evitáveis"
-                    destaque="R$ 450,00">
-                    <p>Uber</p>
-                    <p>Caixinhas</p>
-                    <p>Alimentação fora de casa</p>
+                    destaque="R$ 450,00"
+                    textTitulo={["Uber", "Caixinhas", "Alimentação fora de casa"]}
+                    textDescricao={["R$ 150,00", "R$ 50,00", "R$ 250,00"]}
+                    >
                 </Card>
             </ContainerMainCards>
         </ContainerGeralHome>

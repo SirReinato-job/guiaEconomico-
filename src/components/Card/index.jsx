@@ -1,14 +1,29 @@
 import styled from "styled-components";
 
-export default function Card({ children, titulo, destaque,$bgAlert, ...props }) {
+export default function Card({ children, titulo, destaque, $bgAlert, textTitulo, textDescricao, ...props }) {
   return (
     <Container {...props}>
       <HeaderCard>
         <Titulos>
           {titulo}
         </Titulos>
-         <Destaque $bgAlert={$bgAlert}>{destaque}</Destaque>
+        <Destaque $bgAlert={$bgAlert}>{destaque}</Destaque>
       </HeaderCard>
+      <CardCorpoDescricao>
+        {Array.isArray(textTitulo) && Array.isArray(textDescricao)
+          ? textTitulo.map((tituloItem, index) => (
+            <LinhaDescricao key={index}>
+              <TextTitulo>{tituloItem}</TextTitulo>
+              <TextDescricao>{textDescricao[index]}</TextDescricao>
+            </LinhaDescricao>
+          ))
+          : (
+            <LinhaDescricao>
+              <TextTitulo>{textTitulo}</TextTitulo>
+              <TextDescricao>{textDescricao}</TextDescricao>
+            </LinhaDescricao>
+          )}
+      </CardCorpoDescricao>
       {children}
     </Container>
   );
@@ -56,8 +71,31 @@ const Destaque = styled.h2`
     font-weight: bold;
     letter-spacing: .15em;
     white-space: nowrap;
-     background: ${({ $bgAlert }) => 
+     background: ${({ $bgAlert }) =>
     $bgAlert ? "linear-gradient(to right, #820ad1, #00b3ff)" : "transparent"};
     color: ${({ theme }) => theme.colors.valor};
 `;
 
+const CardCorpoDescricao = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 8px;
+`
+const LinhaDescricao = styled.div`
+width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-bottom: 4px; */
+`;
+
+const TextTitulo = styled.h3`
+  font-size: .8em;
+  font-weight: bold;
+
+`
+const TextDescricao = styled.p`
+  font-size: .7em;
+  color: ${({ theme }) => theme.colors.border};
+`;
