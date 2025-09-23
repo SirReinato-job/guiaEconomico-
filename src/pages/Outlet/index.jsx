@@ -1,19 +1,21 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
 
 export default function ContainerGeral() {
   return (
     <Container>
       <NavContainer>
-        <div className="bg-card">
+        <NavCardContainer>
+          <Link to="/" style={{ textDecoration: 'none' }} >
           <Logo />
-          <span>➕ Novo Gasto</span>
-          <span>📁Gastos por Cartão</span>
-          <span>📈 Relatórios</span>
-          <span>🧮 Comparativo </span>
-          <span>🧠Insights Financeiros</span>
-          <span>⚙️ Configurações</span>
-        </div>
+          </Link>
+          <StyledLink to="/">➕ Novo Gasto</StyledLink>
+          <StyledLink to="/gastos-cartao">📁 Gastos por Cartão</StyledLink>
+          <StyledLink to="/relatorios">📈 Relatórios</StyledLink>
+          <StyledLink to="/comparativo">🧮 Comparativo</StyledLink>
+          <StyledLink to="/insights">🧠 Insights Financeiros</StyledLink>
+          <StyledLink to="/configuracoes">⚙️ Configurações</StyledLink>
+        </NavCardContainer>
       </NavContainer>
 
       <MainContainer>
@@ -44,16 +46,37 @@ const NavContainer = styled.div`
   box-sizing: border-box;
   color: white;
   padding: 60px 8px;
+`;
+const NavCardContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  padding: 16px 8px;
+  background-color: ${({ theme }) => theme.colors.cardsBg};
+  border-radius: 16px;
+`;
 
-  .bg-card{
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 32px;
-    padding: 16px 8px;
-    background-color: ${({ theme }) => theme.colors.cardsBg};
-    border-radius: 16px;
+const StyledLink = styled(Link)`
+  text-decoration: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.textOnPrimary};
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 `;
 

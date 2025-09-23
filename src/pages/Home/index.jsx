@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import Card from "../../components/Card";
 import GraficoComparativo from "../../components/CardComparativo";
-import { CardSaldoGrafico } from "../../components/CardGraficoLinha";
+import { CardSaldoGrafico } from "../../components/CardSaldoGrafico";
 
 export default function Home() {
     return (
@@ -33,8 +33,7 @@ export default function Home() {
                     destaque="R$ 1.200,00"
                     textTitulo={["Nubank", "Picpay", "Banco do Brasil"]}
                     textDescricao={["R$ 400,00", "R$ 300,00", "R$ 500,00"]}
-                >
-                </Card>
+                />
                 <Card $bgAlert
                     titulo="Financeiro do Mês"
                     destaque="50/30/20">
