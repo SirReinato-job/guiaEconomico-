@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
-export default function Card({ children, titulo, destaque, $bgAlert, textTitulo, textDescricao, ...props }) {
+export default function Card({ children, titulo, destaque, $bgAlert, textTitulo, textDescricao,$bgClaro,$titulo,$tituloRoxo, ...props }) {
   return (
-    <Container {...props}>
+    <Container {...props} $bgClaro={$bgClaro}>
       <HeaderCard>
-        <Titulos>
+        <Titulos $titulo={$titulo} $tituloRoxo={$tituloRoxo}>
           {titulo}
         </Titulos>
         <Destaque $bgAlert={$bgAlert}>{destaque}</Destaque>
@@ -32,7 +32,7 @@ export default function Card({ children, titulo, destaque, $bgAlert, textTitulo,
 const Container = styled.div`
     width: ${props => props.$widthSm ? '32%' : '48%'};
     height: ${props => props.$heightSm ? '150px' : '220px'};
-    background-color: ${({ theme }) => theme.colors.cardsBg};
+    background-color: ${props => props.$bgClaro ? '#0d1b2a' : '#060f1aff'} ;
     border-radius: 16px;
     padding: ${props => props.$heightSm ? '8px 16px' : '16px'};
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -54,12 +54,24 @@ const HeaderCard = styled.div`
     align-items: center;
 `;
 
-const Titulos = styled.h2`
-    font-size: 1.8em;
+export const Titulos = styled.h2`
+    font-size: ${props => props.$titulo ? '2.5em' : '1.8em' } ;
     letter-spacing: .08em;
     font-weight: bold;
-    color: ${({ theme }) => theme.colors.secondary};
     white-space: nowrap;
+    ${props => props.$tituloRoxo
+    ? `
+      background: linear-gradient(to right, #820ad1, #00b3ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    `
+    : `
+      color: #00b3ff;
+    `
+  }
+
     
 `;
 

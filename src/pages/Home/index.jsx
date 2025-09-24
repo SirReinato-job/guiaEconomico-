@@ -64,7 +64,7 @@ const ContainerGeralHome = styled.div`
     gap: 8px;
     padding: 8px 24px;
 `;
-const HeaderContainer = styled.div`
+export const HeaderContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;

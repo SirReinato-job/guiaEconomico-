@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "data": "01/09/2025",
+    "valor": "R$ 120,00",
+    "tipo": "Essencial",
+    "categoria": "Alimentação"
+  },
+  {
+    "id": 2,
+    "data": "03/09/2025",
+    "valor": "R$ 800,00",
+    "tipo": "Essencial",
+    "categoria": "Aluguel"
+  },
+  {
+    "id": 3,
+    "data": "05/09/2025",
+    "valor": "R$ 50,00",
+    "tipo": "Desejo",
+    "categoria": "Lazer"
+  },
+  {
+    "id": 4,
+    "data": "07/09/2025",
+    "valor": "R$ 25,00",
+    "tipo": "Desejo",
+    "categoria": "Transporte"
+  },
+  {
+    "id": 5,
+    "data": "09/09/2025",
+    "valor": "R$ 200,00",
+    "tipo": "Essencial",
+    "categoria": "Mercado"
+  },
+  {
+    "id": 6,
+    "data": "11/09/2025",
+    "valor": "R$ 120,00",
+    "tipo": "Essencial",
+    "categoria": "Transportes"
+  },
+  {
+    "id": 7,
+    "data": "12/09/2025",
+    "valor": "R$ 90,00",
+    "tipo": "Desejo",
+    "categoria": "Roupas"
+  },
+  {
+    "id": 8,
+    "data": "14/09/2025",
+    "valor": "R$ 75,00",
+    "tipo": "Desejo",
+    "categoria": "Lazer"
+  },
+  {
+    "id": 9,
+    "data": "16/09/2025",
+    "valor": "R$ 650,00",
+    "tipo": "Essencial",
+    "categoria": "Energia"
+  },
+  {
+    "id": 10,
+    "data": "18/09/2025",
+    "valor": "R$ 30,00",
+    "tipo": "Desejo",
+    "categoria": "Streaming"
+  },
+  {
+    "id": 11,
+    "data": "20/09/2025",
+    "valor": "R$ 140,00",
+    "tipo": "Essencial",
+    "categoria": "Saúde"
+  },
+  {
+    "id": 12,
+    "data": "22/09/2025",
+    "valor": "R$ 210,00",
+    "tipo": "Essencial",
+    "categoria": "Higiene"
+  },
+  {
+    "id": 13,
+    "data": "23/09/2025",
+    "valor": "R$ 15,00",
+    "tipo": "Desejo",
+    "categoria": "Cafeteria"
+  },
+  {
+    "id": 14,
+    "data": "25/09/2025",
+    "valor": "R$ 400,00",
+    "tipo": "Essencial",
+    "categoria": "Telecom"
+  },
+  {
+    "id": 15,
+    "data": "27/09/2025",
+    "valor": "R$ 60,00",
+    "tipo": "Desejo",
+    "categoria": "Pets"
+  },
+  {
+    "id": 16,
+    "data": "28/09/2025",
+    "valor": "R$ 300,00",
+    "tipo": "Essencial",
+    "categoria": "Educacao"
+  },
+  {
+    "id": 17,
+    "data": "29/09/2025",
+    "valor": "R$ 95,00",
+    "tipo": "Desejo",
+    "categoria": "Livros"
+  },
+  {
+    "id": 18,
+    "data": "30/09/2025",
+    "valor": "R$ 210,00",
+    "tipo": "Poupança",
+    "categoria": "Transporte Público"
+  }
+]
