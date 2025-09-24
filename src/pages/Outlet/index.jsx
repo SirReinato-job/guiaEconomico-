@@ -58,12 +58,13 @@ const NavCardContainer = styled.div`
   border-radius: 16px;
 `;
 
-const StyledLink = styled(Link)`
+export const StyledLink = styled(Link)`
   text-decoration: none;
   color: white;
   font-size: 1rem;
   font-weight: 500;
-  padding: 4px 12px;
+  background-color: ${props => props.$bgBtn ? '#777777' : 'transparent'};
+  padding: ${props => props.$bgBtn ? '12px 16px' : '4px 12px'};
   border-radius: 8px;
   transition: background-color 0.3s ease;
   width: 100%;
@@ -99,6 +100,11 @@ const Footer = styled.div`
   .textFooter {
     padding-top: 5px;
     text-align: center;
+    background: linear-gradient(to right, #820ad1, #00b3ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
   }
 `;
 
