@@ -28,7 +28,6 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
 
                     <label>Tipo</label>
                     <select {...register("tipo", { required: true })}>
-                        <option value="">-</option>
                         <option value="Essencial">Essencial</option>
                         <option value="Desejo">Desejo</option>
                         <option value="Poupança">Poupança</option>
@@ -36,13 +35,18 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
 
                     <label>Categoria</label>
                     <select {...register("categoria", { required: true })}>
-                        <option value="">-</option>
                         <option value="Alimentação">Alimentação</option>
                         <option value="Uber">Uber</option>
                         <option value="Roupas">Roupas</option>
                         <option value="Lanches">Lanches</option>
                         <option value="Água">Água</option>
                         <option value="Manutenção">Manutenção</option>
+                    </select>
+                    <label>Cartão</label>
+                    <select {...register("cartao", { required: true })}>
+                        <option value="Nubank">Nubank</option>
+                        <option value="Picpay">Picpay</option>
+                        <option value="Banco do Brasil">Banco do Brasil</option>
                     </select>
 
                     <Footer>
@@ -110,7 +114,9 @@ const Form = styled.form`
   input, select {
     padding: 8px;
     border-radius: 6px;
-    border: 1px solid #ccc;
+    border: 1px solid #000;
+    background-color: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.surface};
   }
 `;
 

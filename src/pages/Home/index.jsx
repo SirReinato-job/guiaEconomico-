@@ -21,7 +21,7 @@ export default function Home() {
                 </Card>
                 <Card $widthSm $heightSm $bgAlert
                     titulo="Despesas"
-                    destaque="R$ R$ 120,00" >
+                    destaque="R$ 120,00" >
                     <CardSaldoGrafico />
 
                 </Card>
@@ -62,14 +62,16 @@ const ContainerGeralHome = styled.div`
     flex-direction: column;
     align-items: center;
     gap: 8px;
-    padding: 8px 24px;
+    box-sizing: border-box;
+    height: 100%;
 `;
 export const HeaderContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 0;
+    height: 25%;
+
 `;
 
 const ContainerMainCards = styled.div`
@@ -79,5 +81,6 @@ const ContainerMainCards = styled.div`
     justify-content: space-between;
     align-items: center;
     row-gap: 16px;
+    height: 75%;
     `;
 

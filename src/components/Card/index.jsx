@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export default function Card({ children, titulo, destaque, $bgAlert, textTitulo, textDescricao,$bgClaro,$titulo,$tituloRoxo, ...props }) {
+export default function Card({ children, titulo, destaque, $bgAlert, textTitulo, textDescricao, $bgClaro, $titulo, $tituloRoxo, ...props }) {
   return (
     <Container {...props} $bgClaro={$bgClaro}>
       <HeaderCard>
@@ -31,7 +31,7 @@ export default function Card({ children, titulo, destaque, $bgAlert, textTitulo,
 
 const Container = styled.div`
     width: ${props => props.$widthSm ? '32%' : '48%'};
-    height: ${props => props.$heightSm ? '150px' : '220px'};
+    height: ${props => props.$heightSm ? '100%' : '45%'};
     background-color: ${props => props.$bgClaro ? '#0d1b2a' : '#060f1aff'} ;
     border-radius: 16px;
     padding: ${props => props.$heightSm ? '8px 16px' : '16px'};
@@ -46,6 +46,7 @@ const Container = styled.div`
     &:hover {
         transform: translateY(-1.5px);
     }
+
 `;
 
 const HeaderCard = styled.div`
@@ -55,7 +56,7 @@ const HeaderCard = styled.div`
 `;
 
 export const Titulos = styled.h2`
-    font-size: ${props => props.$titulo ? '2.5em' : '1.8em' } ;
+    font-size: ${props => props.$titulo ? '2.5em' : '1.8em'} ;
     letter-spacing: .08em;
     font-weight: bold;
     white-space: nowrap;
