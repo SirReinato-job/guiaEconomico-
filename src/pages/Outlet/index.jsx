@@ -1,31 +1,47 @@
 import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
+import ModalNovoGasto from "../../components/ModalNovoGasto";
+import { useState } from "react";
+import { useGastos } from "../../context/GastosContext";
 
 export default function ContainerGeral() {
+  const [showModal, setShowModal] = useState(false);
+  const { adicionarGasto } = useGastos();
+  
+  
+
   return (
-    <Container>
-      <NavContainer>
-        <NavCardContainer>
-          <Link to="/" style={{ textDecoration: 'none' }} >
-          <Logo />
-          </Link>
-          <StyledLink to="/">➕ Novo Gasto</StyledLink>
-          <StyledLink to="/gastos-cartao">📁 Gastos por Cartão</StyledLink>
-          <StyledLink to="/relatorios">📈 Relatórios</StyledLink>
-          <StyledLink to="/comparativo">🧮 Comparativo</StyledLink>
-          <StyledLink to="/insights">🧠 Insights Financeiros</StyledLink>
-          <StyledLink to="/configuracoes">⚙️ Configurações</StyledLink>
-        </NavCardContainer>
-      </NavContainer>
+    <>
+      <Container>
+        <NavContainer>
+          <NavCardContainer>
+            <Link to="/" style={{ textDecoration: 'none' }} >
+              <Logo />
+            </Link>
+            <StyledButton onClick={() => setShowModal(true)}>➕ Novo Gasto</StyledButton>
+            <StyledLink to="/gastos-cartao">📁 Gastos por Cartão</StyledLink>
+            <StyledLink to="/relatorios">📈 Relatórios</StyledLink>
+            <StyledLink to="/comparativo">🧮 Comparativo</StyledLink>
+            <StyledLink to="/insights">🧠 Insights Financeiros</StyledLink>
+            <StyledLink to="/configuracoes">⚙️ Configurações</StyledLink>
+          </NavCardContainer>
+        </NavContainer>
 
-      <MainContainer>
-        <Outlet />
-      </MainContainer>
+        <MainContainer>
+          <Outlet />
+        </MainContainer>
 
-      <Footer>
-        <p className="textFooter">Desenvolvido by SirReinato</p>
-      </Footer>
-    </Container>
+        <Footer>
+          <p className="textFooter">Desenvolvido by SirReinato</p>
+        </Footer>
+      </Container>
+      {showModal && (
+        <ModalNovoGasto
+          onClose={() => setShowModal(false)}
+          onSubmit={adicionarGasto}
+        />
+      )}
+    </>
   );
 }
 
@@ -70,6 +86,28 @@ export const StyledLink = styled(Link)`
   width: 100%;
   text-align: center;
   box-sizing: border-box;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.textOnPrimary};
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+`;
+export const StyledButton = styled.button`
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 8px;
+  width: 100%;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.primary};

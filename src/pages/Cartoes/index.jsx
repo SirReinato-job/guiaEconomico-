@@ -1,57 +1,52 @@
 import styled from "styled-components";
 import { HeaderContainer } from "../Home";
 import Card, { Titulos } from "../../components/Card";
-import { useEffect, useState } from "react";
-import { getGastos } from "../../services/gastosService";
-
+import { useGastos } from "../../context/GastosContext";
 
 export default function Cartoes() {
-    const [gastos, setGastos] = useState([]);
+const {gastos} = useGastos();
+  return (
+    <ContainerLista>
+      <Titulos $titulo $tituloRoxo>Setembro - 2025</Titulos>
+      <HeaderContainer>
+        <Card $bgAlert $widthSm $heightSm $bgClaro
+          titulo="Nubank"
+          destaque="R$ 400,00"
+          textTitulo={["Fatura Passada", "Limite Disponível"]}
+          textDescricao={["R$ 362,00", "R$ 2.600,00"]}
+        />
+        <Card $bgAlert $widthSm $heightSm $bgClaro
+          titulo="Picpay"
+          destaque="R$ 300,00"
+          textTitulo={["Fatura Passada", "Limite Disponível"]}
+          textDescricao={["R$ 362,00", "R$ 2.600,00"]}
+        />
+        <Card $bgAlert $widthSm $heightSm $bgClaro
+          titulo="BB"
+          destaque="R$ 500,00"
+          textTitulo={["Fatura Passada", "Limite Disponível"]}
+          textDescricao={["R$ 362,00", "R$ 2.600,00"]}
+        />
+      </HeaderContainer>
+      <ListaGastos>
+        {gastos.length > 0 ? (
+          gastos.map(gasto => (
+            <ItemGasto key={gasto.id}>
+              <Coluna>{gasto.data}</Coluna>
+              <Coluna>R$ {gasto.valor}</Coluna>
+              <Coluna tipo={gasto.tipo}>{gasto.tipo}</Coluna>
+              <Coluna>{gasto.categoria}</Coluna>
+              <BotaoEditar>Editar</BotaoEditar>
+            </ItemGasto>
+          ))
+        ) : (
+          <p style={{ color: "#ccc", textAlign: "center" }}>Nenhum gasto registrado.</p>
+        )}
 
-    useEffect(() => {
-        async function fetchGastos() {
-            const dados = await getGastos();
-            setGastos(dados);
-        }
-        fetchGastos();
-    }, []);
-    return (
-        <ContainerLista>
-            <Titulos $titulo $tituloRoxo>Setembro - 2025</Titulos>
-            <HeaderContainer>
-                <Card $bgAlert $widthSm $heightSm $bgClaro
-                    titulo="Nubank"
-                    destaque="R$ 400,00"
-                    textTitulo={["Fatura Passada", "Limite Disponível"]}
-                    textDescricao={["R$ 362,00", "R$ 2.600,00"]}
-                />
-                <Card $bgAlert $widthSm $heightSm $bgClaro
-                    titulo="Picpay"
-                    destaque="R$ 300,00"
-                    textTitulo={["Fatura Passada", "Limite Disponível"]}
-                    textDescricao={["R$ 362,00", "R$ 2.600,00"]}
-                />
-                <Card $bgAlert $widthSm $heightSm $bgClaro
-                    titulo="BB"
-                    destaque="R$ 500,00"
-                    textTitulo={["Fatura Passada", "Limite Disponível"]}
-                    textDescricao={["R$ 362,00", "R$ 2.600,00"]}
-                />
-            </HeaderContainer>
-            <ListaGastos>
-                {gastos.map(gasto => (
-                    <ItemGasto key={gasto.id}>
-                        <Coluna>{gasto.data}</Coluna>
-                        <Coluna>{gasto.valor}</Coluna>
-                        <Coluna tipo={gasto.tipo}>{gasto.tipo}</Coluna>
-                        <Coluna>{gasto.categoria}</Coluna>
-                        <BotaoEditar>Editar</BotaoEditar>
-                    </ItemGasto>
-                ))}
-            </ListaGastos>
+      </ListaGastos>
 
-        </ContainerLista>
-    )
+    </ContainerLista>
+  )
 }
 
 const ContainerLista = styled.div`
@@ -110,11 +105,11 @@ const Coluna = styled.div`
   font-size: 0.85em;
   font-weight: ${({ tipo }) => tipo ? "bold" : "normal"};
   color: ${({ tipo }) => {
-        if (tipo === "Essencial") return "#ff6b6b";
-        if (tipo === "Desejo") return "#f9c74f";
-        if (tipo === "Poupança") return "#43aa8b";
-        return "#ffffff";
-    }};
+    if (tipo === "Essencial") return "#ff6b6b";
+    if (tipo === "Desejo") return "#f9c74f";
+    if (tipo === "Poupança") return "#43aa8b";
+    return "#ffffff";
+  }};
 `;
 
 const BotaoEditar = styled.button`
