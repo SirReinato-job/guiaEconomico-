@@ -5,8 +5,10 @@ import { useGastos } from "../../context/GastosContext";
 
 export default function Cartoes() {
   const { gastos } = useGastos();
-  const { getTotalPorCartao } = useGastos();
-  const totaisPorCartao = getTotalPorCartao();
+  const { getFaturaPorCartao } = useGastos();
+  const faturaAtual = getFaturaPorCartao("atual");
+  const faturaAnterior = getFaturaPorCartao("anterior");
+
 
   const hoje = new Date();
   const nomeMesAno = hoje.toLocaleDateString("pt-BR", {
@@ -20,21 +22,36 @@ export default function Cartoes() {
       <HeaderContainer>
         <Card $bgAlert $widthSm $heightSm $bgClaro
           titulo="Nubank"
-          destaque={`R$ ${totaisPorCartao['Nubank'] ? totaisPorCartao['Nubank'].toFixed(2) : '0.00'}`}
+          destaque={`R$ ${faturaAtual['Nubank'] ? faturaAtual['Nubank'].toFixed(2) : '0.00'}`}
           textTitulo={["Fatura Passada", "Limite Disponível"]}
-          textDescricao={["R$ 362,00", "R$ 2.600,00"]}
+          textDescricao={[
+            `R$ ${faturaAnterior['Nubank']?.toFixed(2) || '0.00'}`,
+            "R$ 2.600,00"
+          ]}
+
+
         />
         <Card $bgAlert $widthSm $heightSm $bgClaro
           titulo="Picpay"
-          destaque={`R$ ${totaisPorCartao['Picpay'] ? totaisPorCartao['Picpay'].toFixed(2) : '0.00'}`}
+          destaque={`R$ ${faturaAtual['Picpay'] ? faturaAtual['Picpay'].toFixed(2) : '0.00'}`}
           textTitulo={["Fatura Passada", "Limite Disponível"]}
-          textDescricao={["R$ 362,00", "R$ 2.600,00"]}
+          textDescricao={[
+            `R$ ${faturaAnterior['Picpay']?.toFixed(2) || '0.00'}`,
+            "R$ 2.600,00"
+          ]}
+
+
         />
         <Card $bgAlert $widthSm $heightSm $bgClaro
           titulo="BB"
-          destaque={`R$ ${totaisPorCartao['Banco do Brasil'] ? totaisPorCartao['Banco do Brasil'].toFixed(2) : '0.00'}`}
+          destaque={`R$ ${faturaAtual['Banco do Brasil'] ? faturaAtual['Banco do Brasil'].toFixed(2) : '0.00'}`}
           textTitulo={["Fatura Passada", "Limite Disponível"]}
-          textDescricao={["R$ 362,00", "R$ 2.600,00"]}
+          textDescricao={[
+            `R$ ${faturaAnterior['Banco do Brasil']?.toFixed(2) || '0.00'}`,
+            "R$ 2.600,00"
+          ]}
+
+
         />
       </HeaderContainer>
       <ListaGastos>

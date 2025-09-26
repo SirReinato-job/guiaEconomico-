@@ -21,41 +21,58 @@ export function GastosProvider({ children }) {
     }
   };
 
-
   const FECHAMENTOS = {
     "Nubank": { diaFechamento: 30 },
-    "Picpay": { diaFechamento: 2 },
+    "Picpay": { diaFechamento: 30 },
     "Banco do Brasil": { diaFechamento: 27 }
   };
 
-  const getTotalPorCartao = () => {
-    const hoje = new Date();
-    const ano = hoje.getFullYear();
-    const mes = hoje.getMonth();
+  function getIntervaloFatura(cartao, referencia = new Date(), ciclo = "atual") {
+    const ano = referencia.getFullYear();
+    const mes = referencia.getMonth();
+    const fechamento = FECHAMENTOS[cartao]?.diaFechamento ?? 30;
 
+    if (ciclo === "atual") {
+      return {
+        inicio: new Date(ano, mes - 1, fechamento + 1),
+        fim: new Date(ano, mes, fechamento)
+      };
+    }
+
+    if (ciclo === "anterior") {
+      return {
+        inicio: new Date(ano, mes - 2, fechamento + 1),
+        fim: new Date(ano, mes - 1, fechamento)
+      };
+    }
+
+    return { inicio: null, fim: null };
+  }
+
+  function getFaturaPorCartao(ciclo = "atual") {
     const totais = {};
 
     gastos.forEach(gasto => {
-      const dataGasto = new Date(gasto.data);
       const cartao = gasto.cartao;
       const valor = parseFloat(gasto.valor);
-      const fechamento = FECHAMENTOS[cartao]?.diaFechamento ?? 30;
+      const dataGasto = new Date(gasto.data);
+      const { inicio, fim } = getIntervaloFatura(cartao, new Date(), ciclo);
 
-      const inicioFatura = new Date(ano, mes - 1, fechamento + 1);
-      const fimFatura = new Date(ano, mes, fechamento);
-
-      if (dataGasto >= inicioFatura && dataGasto <= fimFatura) {
+      if (dataGasto >= inicio && dataGasto <= fim) {
         if (!totais[cartao]) totais[cartao] = 0;
         totais[cartao] += valor;
       }
     });
 
     return totais;
-  };
-
+  }
 
   return (
-    <GastosContext.Provider value={{ gastos, adicionarGasto, getTotalPorCartao }}>
+    <GastosContext.Provider value={{
+      gastos,
+      adicionarGasto,
+      getFaturaPorCartao
+    }}>
       {children}
     </GastosContext.Provider>
   );
