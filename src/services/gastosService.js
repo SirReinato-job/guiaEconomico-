@@ -1,5 +1,5 @@
 
-const BASE_URL = "http://localhost:3001/gastos";
+const BASE_URL = "http://localhost:3000/gastos";
 
 export async function getGastos() {
   try {

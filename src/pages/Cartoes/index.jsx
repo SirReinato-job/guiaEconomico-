@@ -4,26 +4,35 @@ import Card, { Titulos } from "../../components/Card";
 import { useGastos } from "../../context/GastosContext";
 
 export default function Cartoes() {
-const {gastos} = useGastos();
+  const { gastos } = useGastos();
+  const { getTotalPorCartao } = useGastos();
+  const totaisPorCartao = getTotalPorCartao();
+
+  const hoje = new Date();
+  const nomeMesAno = hoje.toLocaleDateString("pt-BR", {
+    month: "long",
+    year: "numeric"
+  });
+
   return (
     <ContainerLista>
-      <Titulos $titulo $tituloRoxo>Setembro - 2025</Titulos>
+      <Titulos $titulo $tituloRoxo>{nomeMesAno.charAt(0).toUpperCase() + nomeMesAno.slice(1)}</Titulos>
       <HeaderContainer>
         <Card $bgAlert $widthSm $heightSm $bgClaro
           titulo="Nubank"
-          destaque="R$ 400,00"
+          destaque={`R$ ${totaisPorCartao['Nubank'] ? totaisPorCartao['Nubank'].toFixed(2) : '0.00'}`}
           textTitulo={["Fatura Passada", "Limite Disponível"]}
           textDescricao={["R$ 362,00", "R$ 2.600,00"]}
         />
         <Card $bgAlert $widthSm $heightSm $bgClaro
           titulo="Picpay"
-          destaque="R$ 300,00"
+          destaque={`R$ ${totaisPorCartao['Picpay'] ? totaisPorCartao['Picpay'].toFixed(2) : '0.00'}`}
           textTitulo={["Fatura Passada", "Limite Disponível"]}
           textDescricao={["R$ 362,00", "R$ 2.600,00"]}
         />
         <Card $bgAlert $widthSm $heightSm $bgClaro
           titulo="BB"
-          destaque="R$ 500,00"
+          destaque={`R$ ${totaisPorCartao['Banco do Brasil'] ? totaisPorCartao['Banco do Brasil'].toFixed(2) : '0.00'}`}
           textTitulo={["Fatura Passada", "Limite Disponível"]}
           textDescricao={["R$ 362,00", "R$ 2.600,00"]}
         />
@@ -33,7 +42,8 @@ const {gastos} = useGastos();
           gastos.map(gasto => (
             <ItemGasto key={gasto.id}>
               <Coluna>{gasto.data}</Coluna>
-              <Coluna>R$ {gasto.valor}</Coluna>
+              <Coluna>R$ {Number(gasto.valor).toFixed(2)}</Coluna>
+              <Coluna>{gasto.cartao}</Coluna>
               <Coluna tipo={gasto.tipo}>{gasto.tipo}</Coluna>
               <Coluna>{gasto.categoria}</Coluna>
               <BotaoEditar>Editar</BotaoEditar>
@@ -104,7 +114,7 @@ const Coluna = styled.div`
   flex: 1;
   font-size: 0.85em;
   font-weight: ${({ tipo }) => tipo ? "bold" : "normal"};
-  color: ${({ tipo }) => {
+  color: ${({ tipo, cartao }) => {
     if (tipo === "Essencial") return "#ff6b6b";
     if (tipo === "Desejo") return "#f9c74f";
     if (tipo === "Poupança") return "#43aa8b";

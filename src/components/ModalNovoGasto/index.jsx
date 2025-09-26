@@ -3,60 +3,60 @@ import styled from "styled-components";
 import { Titulos } from "../Card";
 
 export default function ModalNovoGasto({ onClose, onSubmit }) {
-    const { register, handleSubmit, reset } = useForm();
+  const { register, handleSubmit, reset } = useForm();
 
-    const handleFormSubmit = (data) => {
-        onSubmit(data);
-        reset();
-        onClose();
-    };
+  const handleFormSubmit = (data) => {
+    onSubmit(data);
+    reset();
+    onClose();
+  };
 
-    return (
-        <Overlay >
-            <ModalContent>
-                <Header>
-                    <Titulos>Adicionar Novo Gasto</Titulos>
-                    <CloseButton onClick={onClose}>X</CloseButton>
-                </Header>
+  return (
+    <Overlay >
+      <ModalContent>
+        <Header>
+          <Titulos className="titulo">Adicionar Novo Gasto</Titulos>
+          <CloseButton onClick={onClose}>X</CloseButton>
+        </Header>
 
-                <Form onSubmit={handleSubmit(handleFormSubmit)}>
-                    <label>Data</label>
-                    <input type="date" {...register("data", { required: true })} />
+        <Form onSubmit={handleSubmit(handleFormSubmit)}>
+          <label>Data</label>
+          <input type="date" {...register("data", { required: true })} />
 
-                    <label>Valor</label>
-                    <input type="text" placeholder="R$ 0,00" {...register("valor", { required: true })} />
+          <label>Valor</label>
+          <input type="text" placeholder="R$ 0,00" {...register("valor", { required: true })} />
 
-                    <label>Tipo</label>
-                    <select {...register("tipo", { required: true })}>
-                        <option value="Essencial">Essencial</option>
-                        <option value="Desejo">Desejo</option>
-                        <option value="Poupança">Poupança</option>
-                    </select>
+          <label>Tipo</label>
+          <select {...register("tipo", { required: true })}>
+            <option value="Essencial">Essencial</option>
+            <option value="Desejo">Desejo</option>
+            <option value="Poupança">Poupança</option>
+          </select>
 
-                    <label>Categoria</label>
-                    <select {...register("categoria", { required: true })}>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Uber">Uber</option>
-                        <option value="Roupas">Roupas</option>
-                        <option value="Lanches">Lanches</option>
-                        <option value="Água">Água</option>
-                        <option value="Manutenção">Manutenção</option>
-                    </select>
-                    <label>Cartão</label>
-                    <select {...register("cartao", { required: true })}>
-                        <option value="Nubank">Nubank</option>
-                        <option value="Picpay">Picpay</option>
-                        <option value="Banco do Brasil">Banco do Brasil</option>
-                    </select>
+          <label>Categoria</label>
+          <select {...register("categoria", { required: true })}>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Uber">Uber</option>
+            <option value="Roupas">Roupas</option>
+            <option value="Lanches">Lanches</option>
+            <option value="Água">Água</option>
+            <option value="Manutenção">Manutenção</option>
+          </select>
+          <label>Cartão</label>
+          <select {...register("cartao", { required: true })}>
+            <option value="Nubank">Nubank</option>
+            <option value="Picpay">Picpay</option>
+            <option value="Banco do Brasil">Banco do Brasil</option>
+          </select>
 
-                    <Footer>
-                        <button type="button" onClick={onClose}>Cancelar</button>
-                        <button type="submit">Salvar</button>
-                    </Footer>
-                </Form>
-            </ModalContent>
-        </Overlay>
-    );
+          <Footer>
+            <button type="button" onClick={onClose}>Cancelar</button>
+            <button type="submit">Salvar</button>
+          </Footer>
+        </Form>
+      </ModalContent>
+    </Overlay>
+  );
 }
 
 const Overlay = styled.div`
@@ -71,7 +71,7 @@ const Overlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  background: ${({ theme }) => theme.colors.tercearia};
+  background: linear-gradient(to right, #0d1b2a, #00b3ff);
   padding: 24px;
   border-radius: 16px;
   width: 40%;
@@ -83,19 +83,22 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  .titulo{
+    color: ${({ theme }) => theme.colors.surface};
+  }
 `;
 
 const CloseButton = styled.button`
-  background: ${({ theme }) => theme.colors.secondary};
+  background: ${({ theme }) => theme.colors.surface};
   border: none;
   border-radius: 50%;
   padding: 4px 12px;
-  color: ${({ theme }) => theme.colors.surface};
+  color: ${({ theme }) => theme.colors.secondary};
   font-size: 2rem;
   cursor: pointer;
   &:hover { 
-    background: ${({ theme }) => theme.colors.surface}; 
-    color: ${({ theme }) => theme.colors.secondary}; 
+    background: ${({ theme }) => theme.colors.secondary}; 
+    color: ${({ theme }) => theme.colors.surface}; 
     }
 `;
 
@@ -131,14 +134,14 @@ const Footer = styled.div`
     border-radius: 6px;
     border: none;
     cursor: pointer;
-    background-color: ${({ theme }) => theme.colors.secondary};
-    color: white;
+    background-color: ${({ theme }) => theme.colors.surface};
+    color: ${({ theme }) => theme.colors.secondary};
     &:hover { 
-    background: ${({ theme }) => theme.colors.surface}; 
-    color: ${({ theme }) => theme.colors.secondary}; 
+    background: ${({ theme }) => theme.colors.primary}; 
+    color: ${({ theme }) => theme.colors.surface}; 
     }
     &:first-child {
-      background-color: #777;
+      background-color: ${({ theme }) => theme.colors.cardsBg};
     }
   }
 `;
