@@ -1,0 +1,68 @@
+{
+  "gastos": [
+    {
+      "id": "2fc2",
+      "data": "2025-10-10",
+      "valor": "46",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "b1a0",
+      "data": "2025-10-15",
+      "valor": "180",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Picpay"
+    },
+    {
+      "id": "9a78",
+      "data": "2025-10-02",
+      "valor": "1200",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Banco do Brasil"
+    },
+    {
+      "id": "1093",
+      "data": "2025-10-03",
+      "valor": "66",
+      "tipo": "Desejo",
+      "categoria": "Lanches",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "c865",
+      "data": "2025-09-18",
+      "valor": "1000",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "1c8b",
+      "data": "2025-10-31",
+      "valor": "5000",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "9c84",
+      "data": "2025-10-02",
+      "valor": "156",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Picpay"
+    },
+    {
+      "id": "4d16",
+      "data": "2025-10-02",
+      "valor": "180",
+      "tipo": "Desejo",
+      "categoria": "Alimentação",
+      "cartao": "Picpay"
+    }
+  ]
+}

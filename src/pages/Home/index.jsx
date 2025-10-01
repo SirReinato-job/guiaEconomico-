@@ -2,56 +2,79 @@ import styled from "styled-components";
 import Card from "../../components/Card";
 import GraficoComparativo from "../../components/CardComparativo";
 import { CardSaldoGrafico } from "../../components/CardSaldoGrafico";
+import { useGastos } from "../../context/GastosContext";
 
 export default function Home() {
+    const { getFaturaPorCartao, getFaturaTotalCartao } = useGastos();
+
+    const totaisPorCartao = getFaturaPorCartao();
+    const nomeCartao = Object.keys(totaisPorCartao);
+    const valorPorCartao = Object.values(totaisPorCartao).map(
+        (valor) => `R$ ${valor.toFixed(2)}`
+    );
+    const valorTotal = `R$ ${getFaturaTotalCartao().toFixed(2)}`;
+
     return (
         <ContainerGeralHome>
             <HeaderContainer>
-                <Card $widthSm $heightSm $bgAlert
+                <Card
+                    $widthSm
+                    $heightSm
+                    $bgAlert
                     titulo="Saldo"
-                    destaque="R$ 4.250,00">
+                    destaque="R$ 4.250,00"
+                >
                     <CardSaldoGrafico />
                 </Card>
-                <Card $widthSm $heightSm $bgAlert
+                <Card
+                    $widthSm
+                    $heightSm
+                    $bgAlert
                     titulo="Entradas"
                     destaque="R$ 20,00"
                 >
                     <CardSaldoGrafico />
-
                 </Card>
-                <Card $widthSm $heightSm $bgAlert
+                <Card
+                    $widthSm
+                    $heightSm
+                    $bgAlert
                     titulo="Despesas"
-                    destaque="R$ 120,00" >
+                    destaque="R$ 120,00"
+                >
                     <CardSaldoGrafico />
-
                 </Card>
             </HeaderContainer>
 
             <ContainerMainCards>
-                <Card $bgAlert
+                <Card
+                    $bgAlert
                     titulo="Cartões"
-                    destaque="R$ 1.200,00"
-                    textTitulo={["Nubank", "Picpay", "Banco do Brasil"]}
-                    textDescricao={["R$ 400,00", "R$ 300,00", "R$ 500,00"]}
+                    destaque={valorTotal}
+                    textTitulo={nomeCartao}
+                    textDescricao={valorPorCartao}
                 />
-                <Card $bgAlert
-                    titulo="Financeiro do Mês"
-                    destaque="50/30/20">
+                <Card $bgAlert titulo="Financeiro do Mês" destaque="50/30/20">
                     <GraficoComparativo />
                 </Card>
-                <Card $bgAlert
+                <Card
+                    $bgAlert
                     titulo="Essenciais"
                     destaque="R$ 800,00"
                     textTitulo={["Aluguel", "Água", "Manutenção"]}
                     textDescricao={["R$ 450,00", "R$ 80,00", "R$ 270,00"]}
                 />
-                <Card $bgAlert
+                <Card
+                    $bgAlert
                     titulo="Evitáveis"
                     destaque="R$ 450,00"
-                    textTitulo={["Uber", "Caixinhas", "Alimentação fora de casa"]}
+                    textTitulo={[
+                        "Uber",
+                        "Caixinhas",
+                        "Alimentação fora de casa",
+                    ]}
                     textDescricao={["R$ 150,00", "R$ 50,00", "R$ 250,00"]}
-                >
-                </Card>
+                ></Card>
             </ContainerMainCards>
         </ContainerGeralHome>
     );
@@ -71,7 +94,6 @@ export const HeaderContainer = styled.div`
     justify-content: space-between;
     align-items: center;
     height: 25%;
-
 `;
 
 const ContainerMainCards = styled.div`
@@ -82,5 +104,4 @@ const ContainerMainCards = styled.div`
     align-items: center;
     row-gap: 16px;
     height: 75%;
-    `;
-
+`;
