@@ -3,6 +3,7 @@ import Card from "../../components/Card";
 import GraficoComparativo from "../../components/CardComparativo";
 import { CardSaldoGrafico } from "../../components/CardSaldoGrafico";
 import { useGastos } from "../../context/GastosContext";
+import { useResumoFinanceiro } from "../../hooks/useResumoFinanceiro";
 import { useSaldo } from "../../context/SaldoContext";
 
 export default function Home() {
@@ -14,8 +15,10 @@ export default function Home() {
         (valor) => `R$ ${valor.toFixed(2)}`
     );
     const valorTotal = `R$ ${getFaturaTotalCartao().toFixed(2)}`;
-    const { getSaldoDoMes } = useSaldo();
-    const saldoFormatado = `R$ ${getSaldoDoMes()}`;
+    const { saldoLiquido } = useResumoFinanceiro();
+    const saldoFormatado = `R$ ${saldoLiquido}`;
+    const { getEntradasDoMes } = useSaldo();
+    const entradasFormatadas = `R$ ${getEntradasDoMes()}`;
 
     return (
         <ContainerGeralHome>
@@ -34,7 +37,7 @@ export default function Home() {
                     $heightSm
                     $bgAlert
                     titulo="Entradas"
-                    destaque="R$ 20,00"
+                    destaque={entradasFormatadas}
                 >
                     <CardSaldoGrafico />
                 </Card>

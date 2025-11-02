@@ -4,7 +4,13 @@
       "id": "9484",
       "data": "2025-11-02",
       "valor": "1500",
-      "tipo": "Essencial"
+      "tipo": "Salario"
+    },
+    {
+      "id": "fd91",
+      "data": "2025-10-14",
+      "valor": "1518",
+      "tipo": "Outro"
     }
   ],
   "gastos": [
@@ -103,6 +109,14 @@
       "tipo": "Essencial",
       "categoria": "Alimentação",
       "cartao": "Nubank"
+    },
+    {
+      "id": "45bf",
+      "data": "2025-11-04",
+      "valor": "820",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Banco do Brasil"
     }
   ]
 }

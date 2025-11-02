@@ -34,9 +34,9 @@ export default function ModalReceita({ onClose, onSubmit }) {
 
                     <label>Tipo</label>
                     <select {...register("tipo", { required: true })}>
-                        <option value="Essencial">Salário</option>
-                        <option value="Desejo">Ganho</option>
-                        <option value="Poupança">PgNeguinha</option>
+                        <option value="Salario">Salário</option>
+                        <option value="Outro">Ganho</option>
+                        <option value="gastoNeguinha">PgNeguinha</option>
                     </select>
                     <Footer>
                         <button type="button" onClick={onClose}>
