@@ -3,11 +3,14 @@ import styled from "styled-components";
 import ModalNovoGasto from "../../components/ModalNovoGasto";
 import { useState } from "react";
 import { useGastos } from "../../context/GastosContext";
+import { useSaldo } from "../../context/SaldoContext";
+import ModalReceita from "../../components/ModalReceita";
 
 export default function ContainerGeral() {
-    const [showModal, setShowModal] = useState(false);
+    const [showModalGasto, setShowModalGasto] = useState(false);
+    const [showModalSaldo, setShowModalSaldo] = useState(false);
     const { adicionarGasto } = useGastos();
-
+    const { adicionarReceita } = useSaldo();
     return (
         <>
             <Container>
@@ -16,8 +19,10 @@ export default function ContainerGeral() {
                         <Link to="/" style={{ textDecoration: "none" }}>
                             <Logo />
                         </Link>
-                        <StyledLink to="/">➕ Receita</StyledLink>
-                        <StyledButton onClick={() => setShowModal(true)}>
+                        <StyledButton onClick={() => setShowModalSaldo(true)}>
+                            ➕ Receita
+                        </StyledButton>
+                        <StyledButton onClick={() => setShowModalGasto(true)}>
                             📉 Novo Gasto
                         </StyledButton>
                         <StyledLink to="/gastos-cartao">
@@ -44,10 +49,16 @@ export default function ContainerGeral() {
                     <p className="textFooter">Desenvolvido by SirReinato</p>
                 </Footer>
             </Container>
-            {showModal && (
+            {showModalGasto && (
                 <ModalNovoGasto
-                    onClose={() => setShowModal(false)}
+                    onClose={() => setShowModalGasto(false)}
                     onSubmit={adicionarGasto}
+                />
+            )}
+            {showModalSaldo && (
+                <ModalReceita
+                    onClose={() => setShowModalSaldo(false)}
+                    onSubmit={adicionarReceita}
                 />
             )}
         </>

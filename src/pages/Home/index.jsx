@@ -3,6 +3,7 @@ import Card from "../../components/Card";
 import GraficoComparativo from "../../components/CardComparativo";
 import { CardSaldoGrafico } from "../../components/CardSaldoGrafico";
 import { useGastos } from "../../context/GastosContext";
+import { useSaldo } from "../../context/SaldoContext";
 
 export default function Home() {
     const { getFaturaPorCartao, getFaturaTotalCartao } = useGastos();
@@ -13,6 +14,8 @@ export default function Home() {
         (valor) => `R$ ${valor.toFixed(2)}`
     );
     const valorTotal = `R$ ${getFaturaTotalCartao().toFixed(2)}`;
+    const { getSaldoDoMes } = useSaldo();
+    const saldoFormatado = `R$ ${getSaldoDoMes()}`;
 
     return (
         <ContainerGeralHome>
@@ -22,7 +25,7 @@ export default function Home() {
                     $heightSm
                     $bgAlert
                     titulo="Saldo"
-                    destaque="R$ 4.250,00"
+                    destaque={saldoFormatado}
                 >
                     <CardSaldoGrafico />
                 </Card>
