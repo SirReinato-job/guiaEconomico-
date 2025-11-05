@@ -5,12 +5,18 @@ import { useState } from "react";
 import { useGastos } from "../../context/GastosContext";
 import { useSaldo } from "../../context/SaldoContext";
 import ModalReceita from "../../components/ModalReceita";
+import ModalEssencial from "../../components/ModalGastoEssencial";
+import { useEssencial } from "../../context/EssencialContext";
 
 export default function ContainerGeral() {
     const [showModalGasto, setShowModalGasto] = useState(false);
     const [showModalSaldo, setShowModalSaldo] = useState(false);
+    const [showModalEssencial, setShowModalEssencial] = useState(false);
+
     const { adicionarGasto } = useGastos();
     const { adicionarReceita } = useSaldo();
+    const { adicionarEssencial } = useEssencial();
+
     return (
         <>
             <Container>
@@ -28,7 +34,11 @@ export default function ContainerGeral() {
                         <StyledLink to="/gastos-cartao">
                             📁 Gastos por Cartão
                         </StyledLink>
-                        <StyledLink to="/relatorios">📈 Relatórios</StyledLink>
+                        <StyledButton
+                            onClick={() => setShowModalEssencial(true)}
+                        >
+                            📉 Gastos Essenciais
+                        </StyledButton>
                         <StyledLink to="/comparativo">
                             🧮 Comparativo
                         </StyledLink>
@@ -59,6 +69,12 @@ export default function ContainerGeral() {
                 <ModalReceita
                     onClose={() => setShowModalSaldo(false)}
                     onSubmit={adicionarReceita}
+                />
+            )}
+            {showModalEssencial && (
+                <ModalEssencial
+                    onClose={() => setShowModalEssencial(false)}
+                    onSubmit={adicionarEssencial}
                 />
             )}
         </>

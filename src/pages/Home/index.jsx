@@ -2,19 +2,15 @@ import styled from "styled-components";
 import Card from "../../components/Card";
 import GraficoComparativo from "../../components/CardComparativo";
 import { CardSaldoGrafico } from "../../components/CardSaldoGrafico";
-import { useGastos } from "../../context/GastosContext";
 import { useResumoFinanceiro } from "../../hooks/useResumoFinanceiro";
 import { useSaldo } from "../../context/SaldoContext";
+import { useResumoCartoes } from "../../hooks/useResumoCartoes";
+import { useResumoEssenciais } from "../../hooks/useResumoEssencial";
 
 export default function Home() {
-    const { getFaturaPorCartao, getFaturaTotalCartao } = useGastos();
+    const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
+    const { nomes, valores, destaque } = useResumoEssenciais();
 
-    const totaisPorCartao = getFaturaPorCartao();
-    const nomeCartao = Object.keys(totaisPorCartao);
-    const valorPorCartao = Object.values(totaisPorCartao).map(
-        (valor) => `R$ ${valor.toFixed(2)}`
-    );
-    const valorTotal = `R$ ${getFaturaTotalCartao().toFixed(2)}`;
     const { saldoLiquido } = useResumoFinanceiro();
     const saldoFormatado = `R$ ${saldoLiquido}`;
     const { getEntradasDoMes } = useSaldo();
@@ -66,10 +62,11 @@ export default function Home() {
                 <Card
                     $bgAlert
                     titulo="Essenciais"
-                    destaque="R$ 800,00"
-                    textTitulo={["Aluguel", "Água", "Manutenção"]}
-                    textDescricao={["R$ 450,00", "R$ 80,00", "R$ 270,00"]}
+                    destaque={destaque}
+                    textTitulo={nomes}
+                    textDescricao={valores}
                 />
+
                 <Card
                     $bgAlert
                     titulo="Evitáveis"

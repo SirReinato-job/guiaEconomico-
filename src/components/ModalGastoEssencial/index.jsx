@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Titulos } from "../Card";
 
-export default function ModalNovoGasto({ onClose, onSubmit }) {
+export default function ModalEssencial({ onClose, onSubmit }) {
     const { register, handleSubmit, reset } = useForm();
 
     const handleFormSubmit = (data) => {
@@ -10,12 +10,11 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
         reset();
         onClose();
     };
-
     return (
         <Overlay>
             <ModalContent>
                 <Header>
-                    <Titulos className="titulo">Adicionar Novo Gasto</Titulos>
+                    <Titulos className="titulo">Gasto essencial</Titulos>
                     <CloseButton onClick={onClose}>X</CloseButton>
                 </Header>
 
@@ -35,30 +34,10 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
 
                     <label>Tipo</label>
                     <select {...register("tipo", { required: true })}>
-                        <option value="Essencial">Essencial</option>
-                        <option value="Desejo">Desejo</option>
-                        <option value="Poupança">Poupança</option>
+                        <option value="aluguel">Aluguel</option>
+                        <option value="agua">Água</option>
+                        <option value="manutencao">Manutenção</option>
                     </select>
-
-                    <label>Categoria</label>
-                    <select {...register("categoria", { required: true })}>
-                        <option value="Manutenção">Poupança</option>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Uber">Uber</option>
-                        <option value="Roupas">Roupas</option>
-                        <option value="Lanches">Lanches</option>
-                        <option value="Água">Água</option>
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Manutenção">Caixinha</option>
-                        <option value="Manutenção">Alimentação fora</option>
-                    </select>
-                    <label>Cartão</label>
-                    <select {...register("cartao", { required: true })}>
-                        <option value="Nubank">Nubank</option>
-                        <option value="Picpay">Picpay</option>
-                        <option value="Banco do Brasil">Banco do Brasil</option>
-                    </select>
-
                     <Footer>
                         <button type="button" onClick={onClose}>
                             Cancelar
