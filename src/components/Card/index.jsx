@@ -13,7 +13,7 @@ export default function Card({
     ...props
 }) {
     return (
-        <Container {...props} $bgClaro={$bgClaro}>
+        <Container {...props} $bgClaro={$bgClaro} type="button">
             <HeaderCard>
                 <Titulos $titulo={$titulo} $tituloRoxo={$tituloRoxo}>
                     {titulo}
@@ -42,7 +42,7 @@ export default function Card({
     );
 }
 
-const Container = styled.div`
+const Container = styled.button`
     width: ${(props) => (props.$widthSm ? "32%" : "48%")};
     height: ${(props) => (props.$heightSm ? "100%" : "45%")};
     background-color: ${(props) => (props.$bgClaro ? "#0d1b2a" : "#060f1aff")};
@@ -56,6 +56,9 @@ const Container = styled.div`
     flex-direction: column;
     overflow: hidden;
 
+    cursor: pointer;
+    border: none;
+    text-align: left;
     &:hover {
         transform: translateY(-1.5px);
     }

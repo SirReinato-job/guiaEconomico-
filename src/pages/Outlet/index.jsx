@@ -1,21 +1,22 @@
 import { Link, Outlet } from "react-router-dom";
 import styled from "styled-components";
 import ModalNovoGasto from "../../components/ModalNovoGasto";
-import { useState } from "react";
-import { useGastos } from "../../context/GastosContext";
-import { useSaldo } from "../../context/SaldoContext";
 import ModalReceita from "../../components/ModalReceita";
 import ModalEssencial from "../../components/ModalGastoEssencial";
-import { useEssencial } from "../../context/EssencialContext";
+import { useShowModals } from "../../hooks/useShowModals";
 
 export default function ContainerGeral() {
-    const [showModalGasto, setShowModalGasto] = useState(false);
-    const [showModalSaldo, setShowModalSaldo] = useState(false);
-    const [showModalEssencial, setShowModalEssencial] = useState(false);
-
-    const { adicionarGasto } = useGastos();
-    const { adicionarReceita } = useSaldo();
-    const { adicionarEssencial } = useEssencial();
+    const {
+        showModalGasto,
+        setShowModalGasto,
+        showModalSaldo,
+        setShowModalSaldo,
+        showModalEssencial,
+        setShowModalEssencial,
+        adicionarGasto,
+        adicionarReceita,
+        adicionarEssencial,
+    } = useShowModals();
 
     return (
         <>

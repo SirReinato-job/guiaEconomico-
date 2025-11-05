@@ -7,9 +7,26 @@ import { useSaldo } from "../../context/SaldoContext";
 import { useResumoCartoes } from "../../hooks/useResumoCartoes";
 import { useResumoEssenciais } from "../../hooks/useResumoEssencial";
 
+import ModalEssencial from "../../components/ModalGastoEssencial";
+import ModalReceita from "../../components/ModalReceita";
+import ModalNovoGasto from "../../components/ModalNovoGasto";
+import { useShowModals } from "../../hooks/useShowModals";
+
 export default function Home() {
     const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
     const { nomes, valores, destaque } = useResumoEssenciais();
+
+    const {
+        showModalGasto,
+        setShowModalGasto,
+        showModalSaldo,
+        setShowModalSaldo,
+        showModalEssencial,
+        setShowModalEssencial,
+        adicionarGasto,
+        adicionarReceita,
+        adicionarEssencial,
+    } = useShowModals();
 
     const { saldoLiquido } = useResumoFinanceiro();
     const saldoFormatado = `R$ ${saldoLiquido}`;
@@ -25,6 +42,7 @@ export default function Home() {
                     $bgAlert
                     titulo="Saldo"
                     destaque={saldoFormatado}
+                    onClick={() => setShowModalSaldo(true)}
                 >
                     <CardSaldoGrafico />
                 </Card>
@@ -55,6 +73,7 @@ export default function Home() {
                     destaque={valorTotal}
                     textTitulo={nomeCartao}
                     textDescricao={valorPorCartao}
+                    onClick={() => setShowModalGasto(true)}
                 />
                 <Card $bgAlert titulo="Financeiro do Mês" destaque="50/30/20">
                     <GraficoComparativo />
@@ -65,6 +84,7 @@ export default function Home() {
                     destaque={destaque}
                     textTitulo={nomes}
                     textDescricao={valores}
+                    onClick={() => setShowModalEssencial(true)}
                 />
 
                 <Card
@@ -79,6 +99,24 @@ export default function Home() {
                     textDescricao={["R$ 150,00", "R$ 50,00", "R$ 250,00"]}
                 ></Card>
             </ContainerMainCards>
+            {showModalGasto && (
+                <ModalNovoGasto
+                    onClose={() => setShowModalGasto(false)}
+                    onSubmit={adicionarGasto}
+                />
+            )}
+            {showModalSaldo && (
+                <ModalReceita
+                    onClose={() => setShowModalSaldo(false)}
+                    onSubmit={adicionarReceita}
+                />
+            )}
+            {showModalEssencial && (
+                <ModalEssencial
+                    onClose={() => setShowModalEssencial(false)}
+                    onSubmit={adicionarEssencial}
+                />
+            )}
         </ContainerGeralHome>
     );
 }

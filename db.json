@@ -11,6 +11,12 @@
       "data": "2025-10-14",
       "valor": "1518",
       "tipo": "Outro"
+    },
+    {
+      "id": "9b75",
+      "data": "2025-11-05",
+      "valor": "2000",
+      "tipo": "Outro"
     }
   ],
   "essenciais": [
@@ -43,6 +49,12 @@
       "data": "2025-11-07",
       "valor": "1000",
       "tipo": "aluguel"
+    },
+    {
+      "id": "6a0c",
+      "data": "2025-11-03",
+      "valor": "1200",
+      "tipo": "agua"
     }
   ],
   "gastos": [

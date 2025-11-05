@@ -115,6 +115,10 @@ const Form = styled.form`
         background-color: ${({ theme }) => theme.colors.background};
         color: ${({ theme }) => theme.colors.surface};
     }
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+    }
 `;
 
 const Footer = styled.div`
