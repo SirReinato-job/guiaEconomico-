@@ -46,7 +46,7 @@ export default function Home() {
                     $heightSm
                     $bgAlert
                     titulo="Despesas"
-                    destaque="R$ 120,00"
+                    destaque={valorTotal}
                 >
                     <CardSaldoGrafico />
                 </Card>

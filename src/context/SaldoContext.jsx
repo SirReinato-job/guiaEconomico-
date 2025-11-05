@@ -35,10 +35,31 @@ export function SaldoProvider({ children }) {
 
         return total.toFixed(2);
     };
+    function getSalarioDoMes() {
+        const hoje = new Date();
+        const ano = hoje.getFullYear();
+        const mes = hoje.getMonth();
+
+        return saldo
+            .filter((item) => {
+                const data = new Date(item.data);
+                return (
+                    item.tipo === "Salario" &&
+                    data.getMonth() === mes &&
+                    data.getFullYear() === ano
+                );
+            })
+            .reduce((acc, item) => acc + parseFloat(item.valor), 0);
+    }
 
     return (
         <SaldoContext.Provider
-            value={{ saldo, adicionarReceita, getEntradasDoMes }}
+            value={{
+                saldo,
+                adicionarReceita,
+                getEntradasDoMes,
+                getSalarioDoMes,
+            }}
         >
             {children}
         </SaldoContext.Provider>

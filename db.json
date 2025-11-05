@@ -117,6 +117,30 @@
       "tipo": "Essencial",
       "categoria": "Alimentação",
       "cartao": "Banco do Brasil"
+    },
+    {
+      "id": "4061",
+      "data": "2025-11-07",
+      "valor": "1200",
+      "tipo": "Essencial",
+      "categoria": "Alimentação",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "3250",
+      "data": "2025-11-05",
+      "valor": "200",
+      "tipo": "Desejo",
+      "categoria": "Alimentação",
+      "cartao": "Picpay"
+    },
+    {
+      "id": "04d3",
+      "data": "2025-11-05",
+      "valor": "180",
+      "tipo": "Poupança",
+      "categoria": "Roupas",
+      "cartao": "Banco do Brasil"
     }
   ]
 }

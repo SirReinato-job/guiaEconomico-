@@ -95,6 +95,39 @@ export function GastosProvider({ children }) {
         return total;
     }
 
+    function getGastosPorCategoria(tipo, ciclo = "atual") {
+        let total = 0;
+
+        gastos.forEach((gasto) => {
+            if (gasto.tipo !== tipo) return;
+
+            const dataGasto = new Date(gasto.data);
+            const { inicio, fim } = getIntervaloFatura(
+                gasto.cartao,
+                new Date(),
+                ciclo
+            );
+
+            if (dataGasto >= inicio && dataGasto <= fim) {
+                total += parseFloat(gasto.valor);
+            }
+        });
+
+        return total;
+    }
+
+    function getEssenciais() {
+        return getGastosPorCategoria("Essencial");
+    }
+
+    function getLivres() {
+        return getGastosPorCategoria("Desejo");
+    }
+
+    function getInvestimentos() {
+        return getGastosPorCategoria("Poupança");
+    }
+
     return (
         <GastosContext.Provider
             value={{
@@ -102,6 +135,9 @@ export function GastosProvider({ children }) {
                 adicionarGasto,
                 getFaturaPorCartao,
                 getFaturaTotalCartao,
+                getEssenciais,
+                getLivres,
+                getInvestimentos,
             }}
         >
             {children}
