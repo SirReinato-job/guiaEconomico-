@@ -92,7 +92,7 @@ export const Titulos = styled.h2`
 const Destaque = styled.h2`
     padding: 12px 16px;
     border-radius: 12px;
-    font-size: 1.4em;
+    font-size: 1.5em;
     font-family: "Bebas Neue", sans-serif;
     /* font-weight: bolder; */
     letter-spacing: 0.15em;
@@ -119,12 +119,12 @@ const LinhaDescricao = styled.div`
 `;
 
 const TextTitulo = styled.h3`
-    font-size: 0.9em;
-    letter-spacing: 0.05em;
+    font-size: 1.2em;
+    letter-spacing: 0.1em;
     font-weight: bold;
 `;
 const TextDescricao = styled.p`
-    font-size: 0.8em;
-    letter-spacing: 0.05em;
+    font-size: 1.1em;
+    letter-spacing: 0.1em;
     color: ${({ theme }) => theme.colors.border};
 `;

@@ -85,7 +85,7 @@ const Overlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-    background: linear-gradient(to right, #0d1b2a, #00b3ff);
+    background: linear-gradient(to right, #0c3b70, #00b3ff);
     padding: 24px;
     border-radius: 16px;
     width: 40%;

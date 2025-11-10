@@ -191,6 +191,14 @@
       "tipo": "Poupança",
       "categoria": "Roupas",
       "cartao": "Banco do Brasil"
+    },
+    {
+      "id": "fa94",
+      "data": "2025-11-09",
+      "valor": "180",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Picpay"
     }
   ]
 }
