@@ -138,6 +138,7 @@ export function GastosProvider({ children }) {
                 getEssenciais,
                 getLivres,
                 getInvestimentos,
+                getIntervaloFatura,
             }}
         >
             {children}

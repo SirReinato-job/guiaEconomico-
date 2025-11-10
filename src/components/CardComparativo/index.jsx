@@ -9,8 +9,7 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Bar } from "react-chartjs-2";
-import { useGastos } from "../../context/GastosContext";
-import { useSaldo } from "../../context/SaldoContext";
+import { useResumoComparativo } from "../../hooks/useResumoComparativoGrafico";
 
 // Registrar os componentes e o plugin
 ChartJS.register(
@@ -24,20 +23,9 @@ ChartJS.register(
 );
 
 export default function GraficoComparativo() {
-    const { getEssenciais, getLivres, getInvestimentos } = useGastos();
-    const { getSalarioDoMes } = useSaldo();
+    const { percentuais } = useResumoComparativo();
 
-    const salario = parseFloat(getSalarioDoMes());
-
-    const calcularPercentual = (valor) =>
-        salario > 0 ? ((valor / salario) * 100).toFixed(0) : 0;
-
-    const atual = [
-        calcularPercentual(getEssenciais()),
-        calcularPercentual(getLivres()),
-        calcularPercentual(getInvestimentos()),
-    ];
-
+    const atual = percentuais;
     const ideal = [50, 30, 20];
 
     const getColor = (atual, ideal) => {
@@ -50,7 +38,7 @@ export default function GraficoComparativo() {
     );
 
     const data = {
-        labels: ["Necessidades", "Desejos", "Poupança"],
+        labels: ["Essencial", "Desejos", "Poupança"],
         datasets: [
             {
                 label: "Ideal",
