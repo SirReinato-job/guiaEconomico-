@@ -6,15 +6,18 @@ import { useResumoFinanceiro } from "../../hooks/useResumoFinanceiro";
 import { useSaldo } from "../../context/SaldoContext";
 import { useResumoCartoes } from "../../hooks/useResumoCartoes";
 import { useResumoEssenciais } from "../../hooks/useResumoEssencial";
-
 import ModalEssencial from "../../components/ModalGastoEssencial";
 import ModalReceita from "../../components/ModalReceita";
 import ModalNovoGasto from "../../components/ModalNovoGasto";
 import { useShowModals } from "../../hooks/useShowModals";
+import { useResumoEvitaveis } from "../../hooks/useResumoEvitaveis";
 
 export default function Home() {
     const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
     const { nomes, valores, destaque } = useResumoEssenciais();
+    const { totalGeralGastos } = useResumoFinanceiro();
+    const { nomesEvitaveis, valoresEvitaveis, destaqueEvitaveis } =
+        useResumoEvitaveis();
 
     const {
         showModalGasto,
@@ -60,7 +63,7 @@ export default function Home() {
                     $heightSm
                     $bgAlert
                     titulo="Despesas"
-                    destaque={valorTotal}
+                    destaque={totalGeralGastos}
                 >
                     <CardSaldoGrafico />
                 </Card>
@@ -90,13 +93,9 @@ export default function Home() {
                 <Card
                     $bgAlert
                     titulo="Evitáveis"
-                    destaque="R$ 450,00"
-                    textTitulo={[
-                        "Uber",
-                        "Caixinhas",
-                        "Alimentação fora de casa",
-                    ]}
-                    textDescricao={["R$ 150,00", "R$ 50,00", "R$ 250,00"]}
+                    destaque={destaqueEvitaveis}
+                    textTitulo={nomesEvitaveis}
+                    textDescricao={valoresEvitaveis}
                 ></Card>
             </ContainerMainCards>
             {showModalGasto && (

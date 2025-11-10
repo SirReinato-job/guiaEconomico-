@@ -17,43 +17,49 @@
       "data": "2025-11-05",
       "valor": "2000",
       "tipo": "Outro"
+    },
+    {
+      "id": "8f80",
+      "data": "2025-11-13",
+      "valor": "1200",
+      "tipo": "Outro"
+    },
+    {
+      "id": "6002",
+      "data": "2025-11-04",
+      "valor": "1200",
+      "tipo": "Salario"
     }
   ],
   "essenciais": [
     {
-      "id": "9484",
-      "data": "2025-11-02",
-      "valor": "1500",
-      "tipo": "Salario"
-    },
-    {
-      "id": "fd91",
-      "data": "2025-10-14",
-      "valor": "1518",
-      "tipo": "Outro"
-    },
-    {
-      "id": "6e31",
-      "data": "2025-11-05",
-      "valor": "850",
+      "id": "d422",
+      "data": "2025-11-09",
+      "valor": "1350",
       "tipo": "aluguel"
     },
     {
-      "id": "caf7",
-      "data": "2025-11-05",
-      "valor": "20",
-      "tipo": "aluguel"
+      "id": "c8a0",
+      "data": "2025-11-09",
+      "valor": "100",
+      "tipo": "agua"
     },
     {
-      "id": "6427",
-      "data": "2025-11-07",
-      "valor": "1000",
-      "tipo": "aluguel"
+      "id": "ac40",
+      "data": "2025-11-09",
+      "valor": "24",
+      "tipo": "manutencao"
     },
     {
-      "id": "6a0c",
-      "data": "2025-11-03",
-      "valor": "1200",
+      "id": "9016",
+      "data": "2025-11-09",
+      "valor": "46",
+      "tipo": "agua"
+    },
+    {
+      "id": "5054",
+      "data": "2025-11-11",
+      "valor": "180",
       "tipo": "agua"
     }
   ],

@@ -3,16 +3,28 @@ import { useEssencial } from "../context/EssencialContext";
 export function useResumoEssenciais() {
     const { essenciais } = useEssencial();
 
-    const nomes = essenciais.map((item) => item.tipo);
-    const valores = essenciais.map(
-        (item) => `R$ ${parseFloat(item.valor).toFixed(2)}`
+    const agruparPorTipo = essenciais.reduce((acc, item) => {
+        const tipo = item.tipo;
+        const valor = parseFloat(item.valor);
+
+        if (acc[tipo]) {
+            acc[tipo] += valor;
+        } else {
+            acc[tipo] = valor;
+        }
+
+        return acc;
+    }, {});
+
+    const nomes = Object.keys(agruparPorTipo);
+    const valores = Object.values(agruparPorTipo).map(
+        (valor) => `R$ ${valor.toFixed(2)}`
     );
 
-    const total = essenciais.reduce(
-        (acc, item) => acc + parseFloat(item.valor),
+    const total = Object.values(agruparPorTipo).reduce(
+        (acc, val) => acc + val,
         0
     );
-
     const destaque = `R$ ${total.toFixed(2)}`;
 
     return {
