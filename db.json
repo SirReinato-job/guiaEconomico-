@@ -35,6 +35,22 @@
       "tipo": "Desejo",
       "categoria": "Lanches",
       "cartao": "Nubank"
+    },
+    {
+      "id": "125a",
+      "data": "2025-12-30",
+      "valor": "180",
+      "tipo": "Desejo",
+      "categoria": "Alimentação",
+      "cartao": "Banco do Brasil"
+    },
+    {
+      "id": "caca",
+      "data": "2025-12-30",
+      "valor": "180",
+      "tipo": "Desejo",
+      "categoria": "Alimentação",
+      "cartao": "Picpay"
     }
   ]
 }

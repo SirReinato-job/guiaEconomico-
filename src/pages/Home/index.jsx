@@ -46,9 +46,7 @@ export default function Home() {
                     titulo="Saldo"
                     destaque={saldoFormatado}
                     onClick={() => setShowModalSaldo(true)}
-                >
-                    <CardSaldoGrafico />
-                </Card>
+                ></Card>
                 <Card
                     $widthSm
                     $heightSm
