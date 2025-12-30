@@ -45,8 +45,12 @@ export default function Card({
 const Container = styled.button`
     width: ${(props) => (props.$widthSm ? "32%" : "48%")};
     height: ${(props) => (props.$heightSm ? "100%" : "45%")};
-    background-color: ${(props) => (props.$bgClaro ? "#0d1b2a" : "#060f1aff")};
+    background-color: ${(props) =>
+        props.$bgClaro
+            ? props.theme.colors.background
+            : props.theme.colors.cardsBg};
     border-radius: 16px;
+
     padding: ${(props) => (props.$heightSm ? "8px 16px" : "16px")};
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     color: ${({ theme }) => theme.colors.textPrimary};
