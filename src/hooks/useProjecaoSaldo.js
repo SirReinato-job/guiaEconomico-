@@ -4,14 +4,18 @@ import { useEssencial } from "../context/EssencialContext";
 import { getProximosMeses } from "../utils/proximoMesUtils";
 
 export function useProjecaoSaldo(qtd = 3) {
-    const { saldo } = useSaldo();
+    const { saldo, getSalarioDoMes } = useSaldo();
     const { gastos } = useGastos();
     const { essenciais } = useEssencial();
 
     const meses = getProximosMeses(qtd);
 
     const dados = meses.map(({ mes, ano, mesIndex }) => {
-        const entradas = saldo
+        // salário recorrente ou ajustado
+        const salario = getSalarioDoMes(ano, mesIndex);
+
+        // entradas extras (receitas além do salário)
+        const entradasExtras = saldo
             .filter((item) => {
                 const data = new Date(item.data);
                 return (
@@ -20,6 +24,7 @@ export function useProjecaoSaldo(qtd = 3) {
             })
             .reduce((acc, item) => acc + parseFloat(item.valor), 0);
 
+        // saídas (gastos com cartão)
         const saidas = gastos
             .filter((item) => {
                 const data = new Date(item.data);
@@ -29,6 +34,7 @@ export function useProjecaoSaldo(qtd = 3) {
             })
             .reduce((acc, item) => acc + parseFloat(item.valor), 0);
 
+        // essenciais
         const essenciaisTotal = essenciais
             .filter((item) => {
                 const data = new Date(item.data);
@@ -38,7 +44,8 @@ export function useProjecaoSaldo(qtd = 3) {
             })
             .reduce((acc, item) => acc + parseFloat(item.valor), 0);
 
-        const valor = entradas - (saidas + essenciaisTotal);
+        // saldo líquido do mês
+        const valor = salario + entradasExtras - (saidas + essenciaisTotal);
 
         return { mes, valor };
     });

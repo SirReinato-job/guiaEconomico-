@@ -1,3 +1,4 @@
+// context/SaldoContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSaldo, adicionarReceitaAPI } from "../services/saldoService";
 
@@ -5,6 +6,8 @@ const SaldoContext = createContext();
 
 export function SaldoProvider({ children }) {
     const [saldo, setSaldo] = useState([]);
+    const [salarioPadrao, setSalarioPadrao] = useState(1629); // valor recorrente padrão
+    const [salariosPorMes, setSalariosPorMes] = useState({}); // ajustes por mês
 
     useEffect(() => {
         async function carregar() {
@@ -21,10 +24,25 @@ export function SaldoProvider({ children }) {
         }
     };
 
+    // Ajustar salário de um mês específico
+    const ajustarSalarioMes = (ano, mes, valor) => {
+        setSalariosPorMes((prev) => ({
+            ...prev,
+            [`${ano}-${mes}`]: valor,
+        }));
+    };
+
+    // Obter salário do mês (ajustado ou padrão)
+    const getSalarioDoMes = (ano, mes) => {
+        return salariosPorMes[`${ano}-${mes}`] ?? salarioPadrao;
+    };
+
     const getEntradasDoMes = () => {
         const hoje = new Date();
         const ano = hoje.getFullYear();
         const mes = hoje.getMonth();
+
+        const salario = getSalarioDoMes(ano, mes);
 
         const total = saldo
             .filter((item) => {
@@ -33,24 +51,8 @@ export function SaldoProvider({ children }) {
             })
             .reduce((acc, item) => acc + parseFloat(item.valor), 0);
 
-        return total.toFixed(2);
+        return (total + salario).toFixed(2);
     };
-    function getSalarioDoMes() {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = hoje.getMonth();
-
-        return saldo
-            .filter((item) => {
-                const data = new Date(item.data);
-                return (
-                    item.tipo === "Salario" &&
-                    data.getMonth() === mes &&
-                    data.getFullYear() === ano
-                );
-            })
-            .reduce((acc, item) => acc + parseFloat(item.valor), 0);
-    }
 
     return (
         <SaldoContext.Provider
@@ -59,6 +61,9 @@ export function SaldoProvider({ children }) {
                 adicionarReceita,
                 getEntradasDoMes,
                 getSalarioDoMes,
+                ajustarSalarioMes,
+                salarioPadrao,
+                setSalarioPadrao,
             }}
         >
             {children}
