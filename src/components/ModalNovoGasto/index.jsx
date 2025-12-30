@@ -38,12 +38,14 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
                         <option value="Essencial">Essencial</option>
                         <option value="Desejo">Desejo</option>
                         <option value="Poupança">Poupança</option>
+                        <option value="Educacao">Educação</option>
                     </select>
 
                     <label>Categoria</label>
                     <select {...register("categoria", { required: true })}>
                         <option value="Manutenção">Poupança</option>
                         <option value="Alimentação">Alimentação</option>
+                        <option value="Educacao">Educacao</option>
                         <option value="Uber">Uber</option>
                         <option value="Roupas">Roupas</option>
                         <option value="Lanches">Lanches</option>

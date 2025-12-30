@@ -13,10 +13,11 @@ import { useShowModals } from "../../hooks/useShowModals";
 import { useResumoEvitaveis } from "../../hooks/useResumoEvitaveis";
 import ListaProximosMeses from "../../components/ListaProximosMeses";
 import { useProjecaoSaldo } from "../../hooks/useProjecaoSaldo";
+import { useEssencial } from "../../context/EssencialContext";
 
 export default function Home() {
     const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
-    const { nomes, valores, destaque } = useResumoEssenciais();
+    const { nomes, valores } = useResumoEssenciais();
     const { totalGeralGastos } = useResumoFinanceiro();
     const { nomesEvitaveis, valoresEvitaveis, destaqueEvitaveis } =
         useResumoEvitaveis();
@@ -39,6 +40,13 @@ export default function Home() {
     const entradasFormatadas = `R$ ${getEntradasDoMes()}`;
 
     const dadosProximosMeses = useProjecaoSaldo(3);
+
+    const { getTotalEssenciais } = useEssencial();
+    const hoje = new Date();
+    const totalEssenciaisMes = getTotalEssenciais(
+        hoje.getFullYear(),
+        hoje.getMonth()
+    );
 
     return (
         <ContainerGeralHome>
@@ -88,7 +96,7 @@ export default function Home() {
                 <Card
                     $bgAlert
                     titulo="Essenciais"
-                    destaque={destaque}
+                    destaque={`R$ ${totalEssenciaisMes}`}
                     textTitulo={nomes}
                     textDescricao={valores}
                     onClick={() => setShowModalEssencial(true)}

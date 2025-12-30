@@ -28,3 +28,20 @@ export async function adicionarEssencialAPI(novoEssencial) {
         return null;
     }
 }
+
+export async function atualizarEssencialAPI(id, dadosAtualizados) {
+    try {
+        const response = await fetch(`${BASE_URL}/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(dadosAtualizados),
+        });
+        if (!response.ok) throw new Error("Erro ao atualizar gasto essencial");
+        return await response.json();
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}

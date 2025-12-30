@@ -1,5 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { adicionarEssencialAPI, getEssencial } from "../services/essencial";
+import {
+    adicionarEssencialAPI,
+    getEssencial,
+    atualizarEssencialAPI,
+} from "../services/essencial";
 
 const EssencialContext = createContext();
 
@@ -21,6 +25,16 @@ export function EssencialProvider({ children }) {
         }
     };
 
+    // NOVO: atualizar essencial existente
+    const atualizarEssencial = async (id, dadosAtualizados) => {
+        const atualizado = await atualizarEssencialAPI(id, dadosAtualizados);
+        if (atualizado) {
+            setEssenciais((prev) =>
+                prev.map((item) => (item.id === id ? atualizado : item))
+            );
+        }
+    };
+
     const getTotalEssenciais = () => {
         return essenciais.reduce(
             (acc, item) => acc + parseFloat(item.valor),
@@ -33,6 +47,7 @@ export function EssencialProvider({ children }) {
             value={{
                 essenciais,
                 adicionarEssencial,
+                atualizarEssencial, // expõe para a modal
                 getTotalEssenciais,
             }}
         >

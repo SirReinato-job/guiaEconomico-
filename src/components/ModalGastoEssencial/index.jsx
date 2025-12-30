@@ -1,15 +1,26 @@
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Titulos } from "../Card";
+import { useEssencial } from "../../context/EssencialContext";
 
-export default function ModalEssencial({ onClose, onSubmit }) {
+export default function ModalEssencial({ onClose }) {
     const { register, handleSubmit, reset } = useForm();
+    const { essenciais, atualizarEssencial } = useEssencial();
 
     const handleFormSubmit = (data) => {
-        onSubmit(data);
+        // encontra o item pelo tipo
+        const item = essenciais.find((e) => e.tipo === data.tipo);
+        if (item) {
+            atualizarEssencial(item.id, {
+                ...item,
+                valor: data.valor,
+                data: new Date().toISOString().split("T")[0], // atualiza data
+            });
+        }
         reset();
         onClose();
     };
+
     return (
         <Overlay>
             <ModalContent>
@@ -19,12 +30,6 @@ export default function ModalEssencial({ onClose, onSubmit }) {
                 </Header>
 
                 <Form onSubmit={handleSubmit(handleFormSubmit)}>
-                    <label>Data</label>
-                    <input
-                        type="date"
-                        {...register("data", { required: true })}
-                    />
-
                     <label>Valor</label>
                     <input
                         type="text"
@@ -38,6 +43,7 @@ export default function ModalEssencial({ onClose, onSubmit }) {
                         <option value="agua">Água</option>
                         <option value="manutencao">Manutenção</option>
                     </select>
+
                     <Footer>
                         <button type="button" onClick={onClose}>
                             Cancelar
@@ -49,7 +55,6 @@ export default function ModalEssencial({ onClose, onSubmit }) {
         </Overlay>
     );
 }
-
 const Overlay = styled.div`
     position: fixed;
     top: 0;
