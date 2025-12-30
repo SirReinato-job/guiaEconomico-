@@ -51,6 +51,22 @@
       "tipo": "Desejo",
       "categoria": "Alimentação",
       "cartao": "Picpay"
+    },
+    {
+      "id": "2810",
+      "data": "2026-01-14",
+      "valor": "46",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "a82c",
+      "data": "2026-02-03",
+      "valor": "180",
+      "tipo": "Desejo",
+      "categoria": "Lanches",
+      "cartao": "Nubank"
     }
   ]
 }

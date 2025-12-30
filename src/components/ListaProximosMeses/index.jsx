@@ -1,6 +1,11 @@
 import styled from "styled-components";
 
-export default function ListaProximosMeses({ dados }) {
+export default function ListaProximosMeses({ dados = [] }) {
+    if (!Array.isArray(dados)) {
+        console.warn("ListaProximosMeses recebeu dados inválidos:", dados);
+        return null;
+    }
+
     return (
         <Container>
             {dados.map((item, index) => (

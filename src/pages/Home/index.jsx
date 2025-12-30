@@ -12,6 +12,7 @@ import ModalNovoGasto from "../../components/ModalNovoGasto";
 import { useShowModals } from "../../hooks/useShowModals";
 import { useResumoEvitaveis } from "../../hooks/useResumoEvitaveis";
 import ListaProximosMeses from "../../components/ListaProximosMeses";
+import { useProjecaoSaldo } from "../../hooks/useProjecaoSaldo";
 
 export default function Home() {
     const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
@@ -37,6 +38,8 @@ export default function Home() {
     const { getEntradasDoMes } = useSaldo();
     const entradasFormatadas = `R$ ${getEntradasDoMes()}`;
 
+    const dadosProximosMeses = useProjecaoSaldo(3);
+
     return (
         <ContainerGeralHome>
             <HeaderContainer>
@@ -48,13 +51,7 @@ export default function Home() {
                     destaque={saldoFormatado}
                     onClick={() => setShowModalSaldo(true)}
                 >
-                    <ListaProximosMeses
-                        dados={[
-                            { mes: "Janeiro", valor: 1200 },
-                            { mes: "Fevereiro", valor: -500 },
-                            { mes: "Março", valor: 800 },
-                        ]}
-                    />
+                    <ListaProximosMeses dados={dadosProximosMeses} />
                 </Card>
                 <Card
                     $widthSm
