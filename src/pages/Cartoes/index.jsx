@@ -2,12 +2,24 @@ import styled from "styled-components";
 import { HeaderContainer } from "../Home";
 import Card, { Titulos } from "../../components/Card";
 import { useGastos } from "../../context/GastosContext";
+import { useState } from "react";
 
 export default function Cartoes() {
-    const { gastos } = useGastos();
-    const { getFaturaPorCartao } = useGastos();
-    const faturaAtual = getFaturaPorCartao("atual");
-    const faturaAnterior = getFaturaPorCartao("anterior");
+    const { getFaturaPorCartao, getGastosDoCiclo } = useGastos();
+
+    // estado para controlar ciclo ativo
+    const [ciclo, setCiclo] = useState("atual");
+
+    const fatura = getFaturaPorCartao(ciclo);
+    const gastos = ["Nubank", "Picpay", "Banco do Brasil"].map((cartao) => ({
+        cartao,
+        valor: fatura[cartao] ? fatura[cartao].toFixed(2) : "0.00",
+    }));
+
+    // lista detalhada dos gastos do ciclo ativo
+    const gastosDoCiclo = getGastosDoCiclo("Nubank", ciclo)
+        .concat(getGastosDoCiclo("Picpay", ciclo))
+        .concat(getGastosDoCiclo("Banco do Brasil", ciclo));
 
     const hoje = new Date();
     const nomeMesAno = hoje.toLocaleDateString("pt-BR", {
@@ -20,65 +32,51 @@ export default function Cartoes() {
             <Titulos $titulo $tituloRoxo>
                 {nomeMesAno.charAt(0).toUpperCase() + nomeMesAno.slice(1)}
             </Titulos>
+
+            {/* Filtro de ciclo */}
+            <Filtro>
+                <button
+                    className={ciclo === "atual" ? "ativo" : ""}
+                    onClick={() => setCiclo("atual")}
+                >
+                    Atual
+                </button>
+                <button
+                    className={ciclo === "anterior" ? "ativo" : ""}
+                    onClick={() => setCiclo("anterior")}
+                >
+                    Anterior
+                </button>
+                <button
+                    className={ciclo === "proximo" ? "ativo" : ""}
+                    onClick={() => setCiclo("proximo")}
+                >
+                    Próximo
+                </button>
+            </Filtro>
+
             <HeaderContainer>
-                <Card
-                    $bgAlert
-                    $widthSm
-                    $heightSm
-                    $bgClaro
-                    titulo="Nubank"
-                    destaque={`R$ ${
-                        faturaAtual["Nubank"]
-                            ? faturaAtual["Nubank"].toFixed(2)
-                            : "0.00"
-                    }`}
-                    textTitulo={["Fatura Passada", "Limite Disponível"]}
-                    textDescricao={[
-                        `R$ ${faturaAnterior["Nubank"]?.toFixed(2) || "0.00"}`,
-                        "R$ 2.600,00",
-                    ]}
-                />
-                <Card
-                    $bgAlert
-                    $widthSm
-                    $heightSm
-                    $bgClaro
-                    titulo="Picpay"
-                    destaque={`R$ ${
-                        faturaAtual["Picpay"]
-                            ? faturaAtual["Picpay"].toFixed(2)
-                            : "0.00"
-                    }`}
-                    textTitulo={["Fatura Passada", "Limite Disponível"]}
-                    textDescricao={[
-                        `R$ ${faturaAnterior["Picpay"]?.toFixed(2) || "0.00"}`,
-                        "R$ 2.600,00",
-                    ]}
-                />
-                <Card
-                    $bgAlert
-                    $widthSm
-                    $heightSm
-                    $bgClaro
-                    titulo="BB"
-                    destaque={`R$ ${
-                        faturaAtual["Banco do Brasil"]
-                            ? faturaAtual["Banco do Brasil"].toFixed(2)
-                            : "0.00"
-                    }`}
-                    textTitulo={["Fatura Passada", "Limite Disponível"]}
-                    textDescricao={[
-                        `R$ ${
-                            faturaAnterior["Banco do Brasil"]?.toFixed(2) ||
-                            "0.00"
-                        }`,
-                        "R$ 2.600,00",
-                    ]}
-                />
+                {gastos.map((g) => (
+                    <Card
+                        key={g.cartao}
+                        $bgAlert
+                        $widthSm
+                        $heightSm
+                        $bgClaro
+                        titulo={g.cartao}
+                        destaque={`R$ ${g.valor}`}
+                        textTitulo={["Fatura", "Limite Disponível"]}
+                        textDescricao={[
+                            `Ciclo: ${ciclo}`,
+                            "R$ 2.600,00", // mock do limite
+                        ]}
+                    />
+                ))}
             </HeaderContainer>
+
             <ListaGastos>
-                {gastos.length > 0 ? (
-                    gastos.map((gasto) => (
+                {gastosDoCiclo.length > 0 ? (
+                    gastosDoCiclo.map((gasto) => (
                         <ItemGasto key={gasto.id}>
                             <Coluna>{gasto.data}</Coluna>
                             <Coluna>R$ {Number(gasto.valor).toFixed(2)}</Coluna>
@@ -172,5 +170,26 @@ const BotaoEditar = styled.button`
 
     &:hover {
         background-color: ${({ theme }) => theme.colors.hoverBg || "#1a2636"};
+    }
+`;
+
+const Filtro = styled.div`
+    display: flex;
+    gap: 12px;
+    margin: 12px 0;
+
+    button {
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        background-color: ${({ theme }) => theme.colors.cardsBg};
+        color: ${({ theme }) => theme.colors.textPrimary};
+        font-weight: bold;
+
+        &.ativo {
+            background-color: ${({ theme }) => theme.colors.primary};
+            color: ${({ theme }) => theme.colors.surface};
+        }
     }
 `;

@@ -59,6 +59,22 @@
       "tipo": "Educacao",
       "categoria": "Educacao",
       "cartao": "Banco do Brasil"
+    },
+    {
+      "id": "e46b",
+      "data": "2025-11-25",
+      "valor": "46",
+      "tipo": "Desejo",
+      "categoria": "Manutenção",
+      "cartao": "Nubank"
+    },
+    {
+      "id": "99f0",
+      "data": "2026-02-06",
+      "valor": "100",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Banco do Brasil"
     }
   ]
 }
