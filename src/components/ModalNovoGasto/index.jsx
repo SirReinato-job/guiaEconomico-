@@ -7,11 +7,13 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
     const { register, handleSubmit, reset, watch } = useForm({
         defaultValues: {
             parcelas: "1",
+            responsavel: "meu",
         },
     });
 
     const valorWatch = watch("valor");
     const parcelasWatch = watch("parcelas");
+    const responsavelWatch = watch("responsavel");
     const numParcelas = parseInt(parcelasWatch, 10) || 1;
     const valorNumerico = parseCurrency(valorWatch);
 
@@ -42,6 +44,30 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
                         placeholder="R$ 0,00"
                         {...register("valor", { required: true })}
                     />
+
+                    <label>Responsável pelo Gasto</label>
+                    <select {...register("responsavel")}>
+                        <option value="meu">Meu (Próprio)</option>
+                        <option value="mozi">Mozi (100% Reembolsável)</option>
+                        <option value="dividido">Dividido (50% cada)</option>
+                    </select>
+
+                    {responsavelWatch === "mozi" && valorNumerico > 0 && (
+                        <InfoMozi>
+                            💕 R$ {valorNumerico.toFixed(2).replace(".", ",")}{" "}
+                            será adicionado em Ganhos+ (Mozi)
+                        </InfoMozi>
+                    )}
+
+                    {responsavelWatch === "dividido" && valorNumerico > 0 && (
+                        <InfoMozi>
+                            🤝 R${" "}
+                            {(valorNumerico / 2)
+                                .toFixed(2)
+                                .replace(".", ",")}{" "}
+                            para cada (50% em Ganhos+ da Mozi)
+                        </InfoMozi>
+                    )}
 
                     <label>Parcelas</label>
                     <select {...register("parcelas")}>
@@ -218,3 +244,16 @@ const InfoParcelas = styled.div`
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.15);
 `;
+
+const InfoMozi = styled.div`
+    color: #fdf2f8;
+    background: linear-gradient(135deg, rgba(219, 39, 119, 0.3), rgba(147, 51, 234, 0.3));
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid rgba(244, 114, 182, 0.4);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+`;
+

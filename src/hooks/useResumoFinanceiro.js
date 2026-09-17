@@ -6,12 +6,15 @@ import { parseCurrency } from "../utils/currencyUtils";
 
 export function useResumoFinanceiro() {
     const { saldo } = useSaldo();
-    const { getFaturaTotalCartao } = useGastos();
+    const { getFaturaTotalCartao, getGanhosMozi } = useGastos();
 
-    const totalReceitas = saldo.reduce(
+    const totalReceitasBase = saldo.reduce(
         (acc, item) => acc + parseCurrency(item.valor),
         0
     );
+
+    const { totalGeral: totalGanhosMozi = 0 } = getGanhosMozi ? getGanhosMozi() : {};
+    const totalReceitas = totalReceitasBase + totalGanhosMozi;
 
     const { essenciais } = useEssencial();
 
@@ -27,6 +30,8 @@ export function useResumoFinanceiro() {
 
     return {
         totalReceitas: totalReceitas.toFixed(2),
+        totalReceitasBase: totalReceitasBase.toFixed(2),
+        totalGanhosMozi: totalGanhosMozi.toFixed(2),
         totalGastos: totalGastos.toFixed(2),
         saldoLiquido: saldoLiquido.toFixed(2),
         totalGeralGastos: totalGeralGastos.toFixed(2),

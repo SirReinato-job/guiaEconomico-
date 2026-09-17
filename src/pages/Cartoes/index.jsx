@@ -109,6 +109,12 @@ export default function Cartoes() {
                             <Coluna>
                                 {gasto.categoria}
                                 {gasto.parcela ? ` (${gasto.parcela})` : ""}
+                                {gasto.responsavel === "mozi" && (
+                                    <BadgeResponsavel $tipo="mozi">💕 Mozi</BadgeResponsavel>
+                                )}
+                                {gasto.responsavel === "dividido" && (
+                                    <BadgeResponsavel $tipo="dividido">🤝 50% Mozi</BadgeResponsavel>
+                                )}
                             </Coluna>
                             <BotaoEditar>Editar</BotaoEditar>
                         </ItemGasto>
@@ -290,3 +296,25 @@ const BadgePago = styled.div`
     align-items: center;
     gap: 6px;
 `;
+
+const BadgeResponsavel = styled.span`
+    font-size: 0.75em;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    font-weight: bold;
+    display: inline-block;
+    ${({ $tipo }) =>
+        $tipo === "mozi"
+            ? `
+        background: rgba(236, 72, 153, 0.2);
+        color: #f472b6;
+        border: 1px solid rgba(236, 72, 153, 0.4);
+    `
+            : `
+        background: rgba(59, 130, 246, 0.2);
+        color: #60a5fa;
+        border: 1px solid rgba(59, 130, 246, 0.4);
+    `}
+`;
+

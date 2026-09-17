@@ -12,9 +12,11 @@ import ModalNovoGasto from "../../components/ModalNovoGasto";
 import { useShowModals } from "../../hooks/useShowModals";
 import { useResumoEvitaveis } from "../../hooks/useResumoEvitaveis";
 import ListaProximosMeses from "../../components/ListaProximosMeses";
+import ListaGanhosMozi from "../../components/ListaGanhosMozi";
 import { useProjecaoSaldo } from "../../hooks/useProjecaoSaldo";
 import { useEssencial } from "../../context/EssencialContext";
 import { useMes } from "../../context/MesContext";
+import { useGastos } from "../../context/GastosContext";
 
 export default function Home() {
     const {
@@ -41,7 +43,16 @@ export default function Home() {
     const { saldoLiquido } = useResumoFinanceiro();
     const saldoFormatado = `R$ ${saldoLiquido}`;
     const { getEntradasDoMes } = useSaldo();
-    const entradasFormatadas = `R$ ${getEntradasDoMes()}`;
+    const { getGanhosMozi } = useGastos();
+    const { totalGeral: ganhosMoziTotal = 0 } = getGanhosMozi
+        ? getGanhosMozi()
+        : {};
+    const valorEntradasBase = parseFloat(getEntradasDoMes()) || 0;
+    const totalEntradasComGanhos = valorEntradasBase + ganhosMoziTotal;
+    const entradasFormatadas = `R$ ${totalEntradasComGanhos.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })}`;
 
     const dadosProximosMeses = useProjecaoSaldo(3);
 
@@ -74,7 +85,7 @@ export default function Home() {
                     titulo="Entradas"
                     destaque={entradasFormatadas}
                 >
-                    <CardSaldoGrafico />
+                    <ListaGanhosMozi />
                 </Card>
                 <Card
                     $widthSm

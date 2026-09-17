@@ -45,14 +45,15 @@ export function GastosProvider({ children }) {
         return `${anoFormatado}-${mesFormatado}-${diaFormatado}`;
     }
 
-    // CRUD
     const adicionarGasto = async (novoGasto) => {
         const numParcelas = parseInt(novoGasto.parcelas, 10) || 1;
         const valorTotal = parseCurrency(novoGasto.valor);
+        const responsavel = novoGasto.responsavel || "meu";
 
         if (numParcelas <= 1) {
             const gastoSalvo = await adicionarGastoAPI({
                 ...novoGasto,
+                responsavel,
                 valor: valorTotal > 0 ? valorTotal.toFixed(2).replace(".", ",") : novoGasto.valor,
             });
             if (gastoSalvo) setGastos((prev) => [...prev, gastoSalvo]);
@@ -229,6 +230,45 @@ export function GastosProvider({ children }) {
         return getGastosPorCategoria("Poupança", ciclo);
     }
 
+    // Calcula os valores da Mozi por cartão e total geral (100% de mozi + 50% de dividido)
+    function getGanhosMozi(ciclo = "atual", ref = mesReferencia) {
+        const porCartao = {
+            Nubank: 0,
+            Picpay: 0,
+            "Banco do Brasil": 0,
+        };
+        let totalGeral = 0;
+
+        gastos.forEach((gasto) => {
+            const responsavel = gasto.responsavel || "meu";
+            if (responsavel === "meu") return;
+
+            const cartao = gasto.cartao;
+            const valorTotal = parseCurrency(gasto.valor);
+            const dataGasto = parseDataSegura(gasto.data);
+            const { inicio, fim } = getIntervaloFatura(
+                cartao,
+                ref,
+                ciclo
+            );
+
+            if (dataGasto && dataGasto >= inicio && dataGasto <= fim) {
+                const valorMozi = responsavel === "mozi" ? valorTotal : valorTotal * 0.5;
+
+                if (!porCartao[cartao]) {
+                    porCartao[cartao] = 0;
+                }
+                porCartao[cartao] += valorMozi;
+                totalGeral += valorMozi;
+            }
+        });
+
+        return {
+            porCartao,
+            totalGeral,
+        };
+    }
+
     return (
         <GastosContext.Provider
             value={{
@@ -243,6 +283,7 @@ export function GastosProvider({ children }) {
                 getEssenciais,
                 getLivres,
                 getInvestimentos,
+                getGanhosMozi,
             }}
         >
             {children}
