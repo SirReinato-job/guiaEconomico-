@@ -43,6 +43,106 @@
       "categoria": "Educacao",
       "cartao": "Nubank",
       "id": "UK31oBTDccQ"
+    },
+    {
+      "parcelas": "10",
+      "data": "2026-09-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "1/10",
+      "id": "nBCzDt30s0M"
+    },
+    {
+      "parcelas": "10",
+      "data": "2026-10-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "2/10",
+      "id": "aCacJGrShRA"
+    },
+    {
+      "parcelas": "10",
+      "data": "2026-11-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "3/10",
+      "id": "BDB-sjLdeI4"
+    },
+    {
+      "parcelas": "10",
+      "data": "2026-12-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "4/10",
+      "id": "tMRCvJBejek"
+    },
+    {
+      "parcelas": "10",
+      "data": "2027-01-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "5/10",
+      "id": "foT-YAf_pJo"
+    },
+    {
+      "parcelas": "10",
+      "data": "2027-02-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "6/10",
+      "id": "LBlBaY7qHms"
+    },
+    {
+      "parcelas": "10",
+      "data": "2027-03-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "7/10",
+      "id": "R-XVg3GLTeA"
+    },
+    {
+      "parcelas": "10",
+      "data": "2027-04-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "8/10",
+      "id": "gEuP4uSm77M"
+    },
+    {
+      "parcelas": "10",
+      "data": "2027-05-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "9/10",
+      "id": "P8HDK6OA9cU"
+    },
+    {
+      "parcelas": "10",
+      "data": "2027-06-14",
+      "valor": "100,44",
+      "tipo": "Desejo",
+      "categoria": "Roupas",
+      "cartao": "Nubank",
+      "parcela": "10/10",
+      "id": "SIHDMPzm3co"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -1,9 +1,19 @@
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Titulos } from "../Card";
+import { parseCurrency } from "../../utils/currencyUtils";
 
 export default function ModalNovoGasto({ onClose, onSubmit }) {
-    const { register, handleSubmit, reset } = useForm();
+    const { register, handleSubmit, reset, watch } = useForm({
+        defaultValues: {
+            parcelas: "1",
+        },
+    });
+
+    const valorWatch = watch("valor");
+    const parcelasWatch = watch("parcelas");
+    const numParcelas = parseInt(parcelasWatch, 10) || 1;
+    const valorNumerico = parseCurrency(valorWatch);
 
     const handleFormSubmit = (data) => {
         onSubmit(data);
@@ -26,12 +36,39 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
                         {...register("data", { required: true })}
                     />
 
-                    <label>Valor</label>
+                    <label>Valor Total</label>
                     <input
                         type="text"
                         placeholder="R$ 0,00"
                         {...register("valor", { required: true })}
                     />
+
+                    <label>Parcelas</label>
+                    <select {...register("parcelas")}>
+                        <option value="1">1x (À vista)</option>
+                        <option value="2">2x</option>
+                        <option value="3">3x</option>
+                        <option value="4">4x</option>
+                        <option value="5">5x</option>
+                        <option value="6">6x</option>
+                        <option value="7">7x</option>
+                        <option value="8">8x</option>
+                        <option value="9">9x</option>
+                        <option value="10">10x</option>
+                        <option value="11">11x</option>
+                        <option value="12">12x</option>
+                        <option value="18">18x</option>
+                        <option value="24">24x</option>
+                    </select>
+
+                    {numParcelas > 1 && valorNumerico > 0 && (
+                        <InfoParcelas>
+                            {numParcelas}x de R${" "}
+                            {(valorNumerico / numParcelas)
+                                .toFixed(2)
+                                .replace(".", ",")}
+                        </InfoParcelas>
+                    )}
 
                     <label>Tipo</label>
                     <select {...register("tipo", { required: true })}>
@@ -169,4 +206,15 @@ const Footer = styled.div`
             background-color: ${({ theme }) => theme.colors.cardsBg};
         }
     }
+`;
+
+const InfoParcelas = styled.div`
+    color: #e0f2fe;
+    font-size: 0.9em;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 `;

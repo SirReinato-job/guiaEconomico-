@@ -20,10 +20,68 @@ export function GastosProvider({ children }) {
         carregar();
     }, []);
 
+    // Calcula a data para cada mês seguinte de uma parcela
+    function calcularDataParcela(dataBaseStr, mesesAFrente) {
+        if (!dataBaseStr || mesesAFrente === 0) return dataBaseStr;
+
+        const [anoStr, mesStr, diaStr] = dataBaseStr.split("-");
+        const ano = parseInt(anoStr, 10);
+        const mes = parseInt(mesStr, 10) - 1;
+        const dia = parseInt(diaStr, 10);
+
+        const totalMeses = mes + mesesAFrente;
+        const novoAno = ano + Math.floor(totalMeses / 12);
+        const novoMes = totalMeses % 12;
+
+        const ultimoDiaDoMes = new Date(novoAno, novoMes + 1, 0).getDate();
+        const diaFinal = Math.min(dia, ultimoDiaDoMes);
+
+        const anoFormatado = novoAno;
+        const mesFormatado = String(novoMes + 1).padStart(2, "0");
+        const diaFormatado = String(diaFinal).padStart(2, "0");
+
+        return `${anoFormatado}-${mesFormatado}-${diaFormatado}`;
+    }
+
     // CRUD
     const adicionarGasto = async (novoGasto) => {
-        const gastoSalvo = await adicionarGastoAPI(novoGasto);
-        if (gastoSalvo) setGastos((prev) => [...prev, gastoSalvo]);
+        const numParcelas = parseInt(novoGasto.parcelas, 10) || 1;
+        const valorTotal = parseCurrency(novoGasto.valor);
+
+        if (numParcelas <= 1) {
+            const gastoSalvo = await adicionarGastoAPI({
+                ...novoGasto,
+                valor: valorTotal > 0 ? valorTotal.toFixed(2).replace(".", ",") : novoGasto.valor,
+            });
+            if (gastoSalvo) setGastos((prev) => [...prev, gastoSalvo]);
+            return;
+        }
+
+        // Divide o valor entre as parcelas
+        const valorParcelaBase = Math.floor((valorTotal / numParcelas) * 100) / 100;
+        const sobraCentavos = Number((valorTotal - valorParcelaBase * numParcelas).toFixed(2));
+        const dataBase = novoGasto.data;
+
+        const novosGastos = [];
+        for (let i = 0; i < numParcelas; i++) {
+            const valorParcela = i === 0 ? valorParcelaBase + sobraCentavos : valorParcelaBase;
+            const dataParcela = calcularDataParcela(dataBase, i);
+
+            novosGastos.push({
+                ...novoGasto,
+                data: dataParcela,
+                valor: valorParcela.toFixed(2).replace(".", ","),
+                parcela: `${i + 1}/${numParcelas}`,
+            });
+        }
+
+        const promessas = novosGastos.map((gasto) => adicionarGastoAPI(gasto));
+        const gastosSalvos = await Promise.all(promessas);
+        const gastosValidos = gastosSalvos.filter(Boolean);
+
+        if (gastosValidos.length > 0) {
+            setGastos((prev) => [...prev, ...gastosValidos]);
+        }
     };
 
     const atualizarGasto = async (id, dadosAtualizados) => {

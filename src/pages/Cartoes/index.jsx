@@ -85,7 +85,10 @@ export default function Cartoes() {
                             </Coluna>
                             <Coluna>{gasto.cartao}</Coluna>
                             <Coluna tipo={gasto.tipo}>{gasto.tipo}</Coluna>
-                            <Coluna>{gasto.categoria}</Coluna>
+                            <Coluna>
+                                {gasto.categoria}
+                                {gasto.parcela ? ` (${gasto.parcela})` : ""}
+                            </Coluna>
                             <BotaoEditar>Editar</BotaoEditar>
                         </ItemGasto>
                     ))
