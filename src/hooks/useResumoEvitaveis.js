@@ -10,22 +10,25 @@ export function useResumoEvitaveis() {
     const ano = dataRef.getFullYear();
     const mes = dataRef.getMonth();
 
-    const agruparPorNome = gastos.reduce((acc, gasto) => {
+    const agruparPorNome = (gastos || []).reduce((acc, gasto) => {
         const { tipo, categoria, valor, data } = gasto;
         if (!data) return acc;
-        const dataGasto = new Date(data.includes("T") ? data : `${data}T12:00:00`);
 
-        const isDesejo = tipo === "Desejo";
+        const tipoNorm = (tipo || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .trim();
+        const isDesejo = tipoNorm.includes("desejo");
+
+        const dataGasto = new Date(data.includes("T") ? data : `${data}T12:00:00`);
         const isDoMes =
             dataGasto.getMonth() === mes && dataGasto.getFullYear() === ano;
 
         if (isDesejo && isDoMes) {
+            const cat = categoria || "Outros";
             const valorNum = parseCurrency(valor);
-            if (acc[categoria]) {
-                acc[categoria] += valorNum;
-            } else {
-                acc[categoria] = valorNum;
-            }
+            acc[cat] = (acc[cat] || 0) + valorNum;
         }
 
         return acc;
@@ -33,18 +36,28 @@ export function useResumoEvitaveis() {
 
     const nomesEvitaveis = Object.keys(agruparPorNome);
     const valoresEvitaveis = Object.values(agruparPorNome).map(
-        (valor) => `R$ ${valor.toFixed(2)}`
+        (valor) =>
+            `R$ ${valor.toLocaleString("pt-BR", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })}`
     );
 
     const total = Object.values(agruparPorNome).reduce(
         (acc, val) => acc + val,
         0
     );
-    const destaqueEvitaveis = `R$ ${total.toFixed(2)}`;
+    const destaqueEvitaveis = `R$ ${total.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    })}`;
 
     return {
         nomesEvitaveis,
         valoresEvitaveis,
         destaqueEvitaveis,
+        destaque: destaqueEvitaveis,
+        nomes: nomesEvitaveis,
+        valores: valoresEvitaveis,
     };
 }

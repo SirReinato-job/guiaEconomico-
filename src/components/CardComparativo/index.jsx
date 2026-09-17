@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -30,9 +31,9 @@ export default function GraficoComparativo() {
     const atual = percentuais || [0, 0, 0];
     const ideal = [50, 30, 20];
 
-    const getColor = (atual, ideal) => {
-        const diff = atual - ideal;
-        return diff > 5 ? "#dc3545" : "#28a745";
+    const getColor = (atualVal, idealVal) => {
+        const diff = atualVal - idealVal;
+        return diff > 5 ? "#ef4444" : "#10b981";
     };
 
     const atualColors = atual.map((valor, i) =>
@@ -45,40 +46,61 @@ export default function GraficoComparativo() {
             {
                 label: "Ideal",
                 data: ideal,
-                backgroundColor: "#5a8ee0",
+                backgroundColor: "rgba(59, 130, 246, 0.85)",
+                hoverBackgroundColor: "#3b82f6",
+                borderRadius: 6,
+                borderSkipped: false,
+                categoryPercentage: 0.75,
+                barPercentage: 0.85,
             },
             {
                 label: "Atual",
                 data: atual,
                 backgroundColor: atualColors,
+                hoverBackgroundColor: atualColors,
+                borderRadius: 6,
+                borderSkipped: false,
+                categoryPercentage: 0.75,
+                barPercentage: 0.85,
             },
         ],
     };
 
     const options = {
         responsive: true,
+        maintainAspectRatio: false,
         layout: {
             padding: {
-                top: 28,
+                top: 34,
+                bottom: 4,
+                left: 4,
+                right: 4,
             },
         },
         scales: {
             y: {
                 beginAtZero: true,
-                grace: "20%",
+                grace: "30%",
                 ticks: {
-                    color: "#a0aec0",
+                    color: "#64748b",
+                    font: { size: 11 },
                     callback: (value) => `${value}%`,
                 },
                 grid: {
-                    color: "rgba(255, 255, 255, 0.08)",
+                    color: "rgba(255, 255, 255, 0.05)",
+                },
+                border: {
+                    display: false,
                 },
             },
             x: {
                 grid: { display: false },
+                border: {
+                    display: false,
+                },
                 ticks: {
-                    color: "#ffffff",
-                    font: { weight: "bold" },
+                    color: "#e2e8f0",
+                    font: { size: 12, weight: "bold" },
                 },
             },
         },
@@ -86,10 +108,27 @@ export default function GraficoComparativo() {
             legend: {
                 position: "bottom",
                 labels: {
-                    color: "#ffffff",
+                    color: "#cbd5e1",
+                    usePointStyle: true,
+                    pointStyle: "circle",
+                    boxWidth: 8,
+                    boxHeight: 8,
+                    padding: 14,
+                    font: {
+                        size: 12,
+                        weight: "500",
+                    },
                 },
             },
             tooltip: {
+                backgroundColor: "#0f172a",
+                titleColor: "#f8fafc",
+                bodyColor: "#cbd5e1",
+                borderColor: "rgba(255, 255, 255, 0.12)",
+                borderWidth: 1,
+                padding: 10,
+                boxPadding: 4,
+                usePointStyle: true,
                 callbacks: {
                     label: (context) => {
                         const isAtual = context.dataset.label === "Atual";
@@ -108,13 +147,13 @@ export default function GraficoComparativo() {
                 },
             },
             datalabels: {
-                color: "#ffffff",
+                color: "#f8fafc",
                 anchor: "end",
                 align: "top",
-                offset: 2,
+                offset: 3,
                 font: {
                     weight: "bold",
-                    size: 10,
+                    size: 11,
                 },
                 textAlign: "center",
                 formatter: (value, context) => {
@@ -124,8 +163,9 @@ export default function GraficoComparativo() {
                         ? (totais[idx] || 0)
                         : (salario * ((ideal[idx] || 0) / 100));
 
+                    const casasDecimais = valorReal % 1 === 0 ? 0 : 2;
                     const realFormatado = valorReal.toLocaleString("pt-BR", {
-                        minimumFractionDigits: 2,
+                        minimumFractionDigits: casasDecimais,
                         maximumFractionDigits: 2,
                     });
 
@@ -135,5 +175,21 @@ export default function GraficoComparativo() {
         },
     };
 
-    return <Bar data={data} options={options} />;
+    return (
+        <ContainerGrafico>
+            <Bar data={data} options={options} />
+        </ContainerGrafico>
+    );
 }
+
+const ContainerGrafico = styled.div`
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    min-height: 160px;
+    margin-top: 6px;
+`;
