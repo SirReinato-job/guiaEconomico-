@@ -2,6 +2,7 @@ import { useSaldo } from "../context/SaldoContext";
 import { useGastos } from "../context/GastosContext";
 import { useEssencial } from "../context/EssencialContext";
 import { getProximosMeses } from "../utils/proximoMesUtils";
+import { parseCurrency } from "../utils/currencyUtils";
 
 export function useProjecaoSaldo(qtd = 3) {
     const { saldo, getSalarioDoMes } = useSaldo();
@@ -12,7 +13,7 @@ export function useProjecaoSaldo(qtd = 3) {
 
     const dados = meses.map(({ mes, ano, mesIndex }) => {
         // salário recorrente ou ajustado
-        const salario = getSalarioDoMes(ano, mesIndex);
+        const salario = parseCurrency(getSalarioDoMes(ano, mesIndex));
 
         // entradas extras (receitas além do salário)
         const entradasExtras = saldo
@@ -22,7 +23,7 @@ export function useProjecaoSaldo(qtd = 3) {
                     data.getMonth() === mesIndex && data.getFullYear() === ano
                 );
             })
-            .reduce((acc, item) => acc + parseFloat(item.valor), 0);
+            .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
         // saídas (gastos com cartão)
         const saidas = gastos
@@ -32,7 +33,7 @@ export function useProjecaoSaldo(qtd = 3) {
                     data.getMonth() === mesIndex && data.getFullYear() === ano
                 );
             })
-            .reduce((acc, item) => acc + parseFloat(item.valor), 0);
+            .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
         // essenciais
         const essenciaisTotal = essenciais
@@ -42,7 +43,7 @@ export function useProjecaoSaldo(qtd = 3) {
                     data.getMonth() === mesIndex && data.getFullYear() === ano
                 );
             })
-            .reduce((acc, item) => acc + parseFloat(item.valor), 0);
+            .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
         // saldo líquido do mês
         const valor = salario + entradasExtras - (saidas + essenciaisTotal);

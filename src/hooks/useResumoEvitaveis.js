@@ -1,4 +1,5 @@
 import { useGastos } from "../context/GastosContext";
+import { parseCurrency } from "../utils/currencyUtils";
 
 export function useResumoEvitaveis() {
     const { gastos } = useGastos();
@@ -16,10 +17,11 @@ export function useResumoEvitaveis() {
             dataGasto.getMonth() === mes && dataGasto.getFullYear() === ano;
 
         if (isDesejo && isDoMes) {
+            const valorNum = parseCurrency(valor);
             if (acc[categoria]) {
-                acc[categoria] += parseFloat(valor);
+                acc[categoria] += valorNum;
             } else {
-                acc[categoria] = parseFloat(valor);
+                acc[categoria] = valorNum;
             }
         }
 

@@ -43,16 +43,20 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
 
                     <label>Categoria</label>
                     <select {...register("categoria", { required: true })}>
-                        <option value="Manutenção">Poupança</option>
+                        <option value="Poupança">Poupança</option>
                         <option value="Alimentação">Alimentação</option>
-                        <option value="Educacao">Educacao</option>
+                        <option value="Educacao">Educação</option>
                         <option value="Uber">Uber</option>
                         <option value="Roupas">Roupas</option>
                         <option value="Lanches">Lanches</option>
                         <option value="Água">Água</option>
                         <option value="Manutenção">Manutenção</option>
-                        <option value="Manutenção">Caixinha</option>
-                        <option value="Manutenção">Alimentação fora</option>
+                        <option value="Caixinha">Caixinha</option>
+                        <option value="Alimentação fora">Alimentação fora</option>
+                        <option value="Supermercado">Supermercado</option>
+                        <option value="Farmácia">Farmácia</option>
+                        <option value="Contas">Contas</option>
+                        <option value="Outros">Outros</option>
                     </select>
                     <label>Cartão</label>
                     <select {...register("cartao", { required: true })}>

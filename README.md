@@ -69,6 +69,7 @@ src/
 | Comando | Descrição |
 |---------|-----------|
 | `npm run dev` | Inicializa o projeto em modo desenvolvimento |
+| `npm run server` | Inicializa a API simulada com json-server na porta 3000 |
 | `npm run build` | Gera a versão de produção |
 | `npm run preview` | Visualiza a build de produção localmente |
 | `npm run lint` | Executa o ESLint para verificação de código |

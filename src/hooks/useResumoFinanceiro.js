@@ -2,20 +2,21 @@
 import { useSaldo } from "../context/SaldoContext";
 import { useGastos } from "../context/GastosContext";
 import { useEssencial } from "../context/EssencialContext";
+import { parseCurrency } from "../utils/currencyUtils";
 
 export function useResumoFinanceiro() {
     const { saldo } = useSaldo();
     const { getFaturaTotalCartao } = useGastos();
 
     const totalReceitas = saldo.reduce(
-        (acc, item) => acc + parseFloat(item.valor),
+        (acc, item) => acc + parseCurrency(item.valor),
         0
     );
 
     const { essenciais } = useEssencial();
 
     const totalEssenciais = essenciais.reduce(
-        (acc, item) => acc + parseFloat(item.valor),
+        (acc, item) => acc + parseCurrency(item.valor),
         0
     );
 

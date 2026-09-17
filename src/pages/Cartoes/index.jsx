@@ -3,6 +3,7 @@ import { HeaderContainer } from "../Home";
 import Card, { Titulos } from "../../components/Card";
 import { useGastos } from "../../context/GastosContext";
 import { useState } from "react";
+import { parseCurrency } from "../../utils/currencyUtils";
 
 export default function Cartoes() {
     const { getFaturaPorCartao, getGastosDoCiclo } = useGastos();
@@ -79,7 +80,9 @@ export default function Cartoes() {
                     gastosDoCiclo.map((gasto) => (
                         <ItemGasto key={gasto.id}>
                             <Coluna>{gasto.data}</Coluna>
-                            <Coluna>R$ {Number(gasto.valor).toFixed(2)}</Coluna>
+                            <Coluna>
+                                R$ {parseCurrency(gasto.valor).toFixed(2)}
+                            </Coluna>
                             <Coluna>{gasto.cartao}</Coluna>
                             <Coluna tipo={gasto.tipo}>{gasto.tipo}</Coluna>
                             <Coluna>{gasto.categoria}</Coluna>

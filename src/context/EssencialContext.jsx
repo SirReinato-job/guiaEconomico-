@@ -4,6 +4,7 @@ import {
     getEssencial,
     atualizarEssencialAPI,
 } from "../services/essencial";
+import { parseCurrency } from "../utils/currencyUtils";
 
 const EssencialContext = createContext();
 
@@ -37,7 +38,7 @@ export function EssencialProvider({ children }) {
 
     const getTotalEssenciais = () => {
         return essenciais.reduce(
-            (acc, item) => acc + parseFloat(item.valor),
+            (acc, item) => acc + parseCurrency(item.valor),
             0
         );
     };

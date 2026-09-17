@@ -1,11 +1,12 @@
 import { useEssencial } from "../context/EssencialContext";
+import { parseCurrency } from "../utils/currencyUtils";
 
 export function useResumoEssenciais() {
     const { essenciais } = useEssencial();
 
     const agruparPorTipo = essenciais.reduce((acc, item) => {
         const tipo = item.tipo;
-        const valor = parseFloat(item.valor);
+        const valor = parseCurrency(item.valor);
 
         if (acc[tipo]) {
             acc[tipo] += valor;

@@ -1,12 +1,13 @@
 // context/SaldoContext.js
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSaldo, adicionarReceitaAPI } from "../services/saldoService";
+import { parseCurrency } from "../utils/currencyUtils";
 
 const SaldoContext = createContext();
 
 export function SaldoProvider({ children }) {
     const [saldo, setSaldo] = useState([]);
-    const [salarioPadrao, setSalarioPadrao] = useState(1629); // valor recorrente padrão
+    const [salarioPadrao, setSalarioPadrao] = useState(); // valor recorrente padrão
     const [salariosPorMes, setSalariosPorMes] = useState({}); // ajustes por mês
 
     useEffect(() => {
@@ -42,14 +43,14 @@ export function SaldoProvider({ children }) {
         const ano = hoje.getFullYear();
         const mes = hoje.getMonth();
 
-        const salario = getSalarioDoMes(ano, mes);
+        const salario = parseCurrency(getSalarioDoMes(ano, mes));
 
         const total = saldo
             .filter((item) => {
                 const data = new Date(item.data);
                 return data.getMonth() === mes && data.getFullYear() === ano;
             })
-            .reduce((acc, item) => acc + parseFloat(item.valor), 0);
+            .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
         return (total + salario).toFixed(2);
     };

@@ -5,6 +5,7 @@ import {
     atualizarGastoAPI,
     removerGastoAPI,
 } from "../services/gastosService";
+import { parseCurrency } from "../utils/currencyUtils";
 
 const GastosContext = createContext();
 
@@ -96,7 +97,7 @@ export function GastosProvider({ children }) {
         const totais = {};
         gastos.forEach((gasto) => {
             const cartao = gasto.cartao;
-            const valor = parseFloat(gasto.valor);
+            const valor = parseCurrency(gasto.valor);
             const dataGasto = new Date(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 cartao,
@@ -116,7 +117,7 @@ export function GastosProvider({ children }) {
     function getFaturaTotalCartao(ciclo = "atual") {
         let total = 0;
         gastos.forEach((gasto) => {
-            const valor = parseFloat(gasto.valor);
+            const valor = parseCurrency(gasto.valor);
             const dataGasto = new Date(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 gasto.cartao,
@@ -144,7 +145,7 @@ export function GastosProvider({ children }) {
             );
 
             if (dataGasto >= inicio && dataGasto <= fim) {
-                total += parseFloat(gasto.valor);
+                total += parseCurrency(gasto.valor);
             }
         });
         return total;

@@ -10,6 +10,7 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { Bar } from "react-chartjs-2";
 import { useResumoComparativo } from "../../hooks/useResumoComparativoGrafico";
+import { parseCurrency } from "../../utils/currencyUtils";
 
 // Registrar os componentes e o plugin
 ChartJS.register(
@@ -34,7 +35,7 @@ export default function GraficoComparativo() {
     };
 
     const atualColors = atual.map((valor, i) =>
-        getColor(parseFloat(valor), ideal[i])
+        getColor(parseCurrency(valor), ideal[i])
     );
 
     const data = {

@@ -1,16 +1,16 @@
 {
   "saldo": [
     {
-      "id": "4814",
-      "data": "2025-12-05",
-      "valor": "1629",
-      "tipo": "Salario"
+      "data": "2026-09-04",
+      "valor": "2886,62",
+      "tipo": "Salario",
+      "id": "w0jb44LXmwM"
     }
   ],
   "essenciais": [
     {
       "id": "c739",
-      "data": "2025-12-30",
+      "data": "2026-09-17",
       "valor": "730",
       "tipo": "aluguel"
     },
@@ -22,59 +22,11 @@
     },
     {
       "id": "5f4d",
-      "data": "2025-12-30",
-      "valor": "68",
+      "data": "2026-09-17",
+      "valor": "75",
       "tipo": "agua"
     }
   ],
-  "gastos": [
-    {
-      "id": "8901",
-      "data": "2025-12-01",
-      "valor": "96",
-      "tipo": "Educacao",
-      "categoria": "Educacao",
-      "cartao": "Nubank"
-    },
-    {
-      "id": "87d4",
-      "data": "2025-12-30",
-      "valor": "96",
-      "tipo": "Educacao",
-      "categoria": "Educacao",
-      "cartao": "Nubank"
-    },
-    {
-      "id": "9743",
-      "data": "2025-12-30",
-      "valor": "49,99",
-      "tipo": "Educacao",
-      "categoria": "Educacao",
-      "cartao": "Banco do Brasil"
-    },
-    {
-      "id": "3a0c",
-      "data": "2025-12-16",
-      "valor": "49.99",
-      "tipo": "Educacao",
-      "categoria": "Educacao",
-      "cartao": "Banco do Brasil"
-    },
-    {
-      "id": "e46b",
-      "data": "2025-11-25",
-      "valor": "46",
-      "tipo": "Desejo",
-      "categoria": "Manutenção",
-      "cartao": "Nubank"
-    },
-    {
-      "id": "99f0",
-      "data": "2026-02-06",
-      "valor": "100",
-      "tipo": "Desejo",
-      "categoria": "Roupas",
-      "cartao": "Banco do Brasil"
-    }
-  ]
+  "gastos": [],
+  "$schema": "./node_modules/json-server/schema.json"
 }

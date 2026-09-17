@@ -1,16 +1,15 @@
 import { useGastos } from "../context/GastosContext";
 import { useSaldo } from "../context/SaldoContext";
 import { useResumoEssenciais } from "./useResumoEssencial";
+import { parseCurrency } from "../utils/currencyUtils";
 
 export function useResumoComparativo(ciclo = "atual") {
     const { gastos, getIntervaloFatura } = useGastos();
     const { getSalarioDoMes } = useSaldo();
     const { destaque: totalEssenciaisFormatado } = useResumoEssenciais();
 
-    const salario = parseFloat(getSalarioDoMes());
-    const totalEssenciais = parseFloat(
-        totalEssenciaisFormatado.replace("R$ ", "")
-    );
+    const salario = parseCurrency(getSalarioDoMes());
+    const totalEssenciais = parseCurrency(totalEssenciaisFormatado);
 
     const categorias = ["Essencial", "Desejo", "Poupança"];
 
@@ -28,7 +27,7 @@ export function useResumoComparativo(ciclo = "atual") {
             );
 
             if (dataGasto >= inicio && dataGasto <= fim) {
-                total += parseFloat(gasto.valor);
+                total += parseCurrency(gasto.valor);
             }
         });
 
@@ -45,7 +44,7 @@ export function useResumoComparativo(ciclo = "atual") {
 
     return {
         totais,
-        percentuais: percentuais.map((p) => parseFloat(p)),
+        percentuais: percentuais.map((p) => parseCurrency(p)),
         salario,
     };
 }
