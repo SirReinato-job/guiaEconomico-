@@ -27,6 +27,23 @@
       "tipo": "agua"
     }
   ],
-  "gastos": [],
+  "gastos": [
+    {
+      "data": "2026-09-17",
+      "valor": "20",
+      "tipo": "Desejo",
+      "categoria": "Outros",
+      "cartao": "Nubank",
+      "id": "LXdnU2GE7Gc"
+    },
+    {
+      "data": "2026-09-01",
+      "valor": "98",
+      "tipo": "Educacao",
+      "categoria": "Educacao",
+      "cartao": "Nubank",
+      "id": "UK31oBTDccQ"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }

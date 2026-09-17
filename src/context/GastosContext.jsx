@@ -61,34 +61,39 @@ export function GastosProvider({ children }) {
 
         if (ciclo === "atual") {
             return {
-                inicio: new Date(ano, mes - 1, fechamento + 1),
-                fim: new Date(ano, mes, fechamento),
+                inicio: new Date(ano, mes - 1, fechamento + 1, 0, 0, 0, 0),
+                fim: new Date(ano, mes, fechamento, 23, 59, 59, 999),
             };
         }
 
         if (ciclo === "anterior") {
             return {
-                inicio: new Date(ano, mes - 2, fechamento + 1),
-                fim: new Date(ano, mes - 1, fechamento),
+                inicio: new Date(ano, mes - 2, fechamento + 1, 0, 0, 0, 0),
+                fim: new Date(ano, mes - 1, fechamento, 23, 59, 59, 999),
             };
         }
 
         if (ciclo === "proximo") {
             return {
-                inicio: new Date(ano, mes, fechamento + 1),
-                fim: new Date(ano, mes + 1, fechamento),
+                inicio: new Date(ano, mes, fechamento + 1, 0, 0, 0, 0),
+                fim: new Date(ano, mes + 1, fechamento, 23, 59, 59, 999),
             };
         }
 
         return { inicio: null, fim: null };
     }
 
+    const parseDataSegura = (dataStr) => {
+        if (!dataStr) return null;
+        return new Date(dataStr.includes("T") ? dataStr : `${dataStr}T12:00:00`);
+    };
+
     // Gastos de um ciclo específico
     function getGastosDoCiclo(cartao, ciclo = "atual") {
         const { inicio, fim } = getIntervaloFatura(cartao, new Date(), ciclo);
         return gastos.filter((g) => {
-            const data = new Date(g.data);
-            return g.cartao === cartao && data >= inicio && data <= fim;
+            const data = parseDataSegura(g.data);
+            return g.cartao === cartao && data && data >= inicio && data <= fim;
         });
     }
 
@@ -98,14 +103,14 @@ export function GastosProvider({ children }) {
         gastos.forEach((gasto) => {
             const cartao = gasto.cartao;
             const valor = parseCurrency(gasto.valor);
-            const dataGasto = new Date(gasto.data);
+            const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 cartao,
                 new Date(),
                 ciclo
             );
 
-            if (dataGasto >= inicio && dataGasto <= fim) {
+            if (dataGasto && dataGasto >= inicio && dataGasto <= fim) {
                 if (!totais[cartao]) totais[cartao] = 0;
                 totais[cartao] += valor;
             }
@@ -118,14 +123,14 @@ export function GastosProvider({ children }) {
         let total = 0;
         gastos.forEach((gasto) => {
             const valor = parseCurrency(gasto.valor);
-            const dataGasto = new Date(gasto.data);
+            const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 gasto.cartao,
                 new Date(),
                 ciclo
             );
 
-            if (dataGasto >= inicio && dataGasto <= fim) {
+            if (dataGasto && dataGasto >= inicio && dataGasto <= fim) {
                 total += valor;
             }
         });
@@ -137,14 +142,14 @@ export function GastosProvider({ children }) {
         let total = 0;
         gastos.forEach((gasto) => {
             if (gasto.tipo !== tipo) return;
-            const dataGasto = new Date(gasto.data);
+            const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 gasto.cartao,
                 new Date(),
                 ciclo
             );
 
-            if (dataGasto >= inicio && dataGasto <= fim) {
+            if (dataGasto && dataGasto >= inicio && dataGasto <= fim) {
                 total += parseCurrency(gasto.valor);
             }
         });

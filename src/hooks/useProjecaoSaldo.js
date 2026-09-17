@@ -11,36 +11,71 @@ export function useProjecaoSaldo(qtd = 3) {
 
     const meses = getProximosMeses(qtd);
 
+    // Obtém o último salário registrado
+    const ultimosSalarios = (saldo || [])
+        .filter((item) => {
+            const tipo = item.tipo?.toLowerCase();
+            return tipo === "salario" || tipo === "salário";
+        })
+        .sort((a, b) => {
+            const dataA = a.data ? new Date(a.data.includes("T") ? a.data : `${a.data}T00:00:00`) : 0;
+            const dataB = b.data ? new Date(b.data.includes("T") ? b.data : `${b.data}T00:00:00`) : 0;
+            return dataB - dataA;
+        });
+
+    const ultimoSalario =
+        ultimosSalarios.length > 0
+            ? parseCurrency(ultimosSalarios[0].valor)
+            : 0;
+
+    const parseDataSegura = (dataStr) => {
+        if (!dataStr) return null;
+        return new Date(dataStr.includes("T") ? dataStr : `${dataStr}T00:00:00`);
+    };
+
     const dados = meses.map(({ mes, ano, mesIndex }) => {
-        // salário recorrente ou ajustado
-        const salario = parseCurrency(getSalarioDoMes(ano, mesIndex));
+        // Salário do mês (ajuste específico ou último salário registrado)
+        const salarioAjustado = getSalarioDoMes
+            ? parseCurrency(getSalarioDoMes(ano, mesIndex))
+            : 0;
+        const salario = salarioAjustado > 0 ? salarioAjustado : ultimoSalario;
 
         // entradas extras (receitas além do salário)
-        const entradasExtras = saldo
+        const entradasExtras = (saldo || [])
             .filter((item) => {
-                const data = new Date(item.data);
+                const tipo = item.tipo?.toLowerCase();
+                const isSalario = tipo === "salario" || tipo === "salário";
+                if (isSalario) return false;
+
+                const data = parseDataSegura(item.data);
                 return (
-                    data.getMonth() === mesIndex && data.getFullYear() === ano
+                    data &&
+                    data.getMonth() === mesIndex &&
+                    data.getFullYear() === ano
                 );
             })
             .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
         // saídas (gastos com cartão)
-        const saidas = gastos
+        const saidas = (gastos || [])
             .filter((item) => {
-                const data = new Date(item.data);
+                const data = parseDataSegura(item.data);
                 return (
-                    data.getMonth() === mesIndex && data.getFullYear() === ano
+                    data &&
+                    data.getMonth() === mesIndex &&
+                    data.getFullYear() === ano
                 );
             })
             .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
         // essenciais
-        const essenciaisTotal = essenciais
+        const essenciaisTotal = (essenciais || [])
             .filter((item) => {
-                const data = new Date(item.data);
+                const data = parseDataSegura(item.data);
                 return (
-                    data.getMonth() === mesIndex && data.getFullYear() === ano
+                    data &&
+                    data.getMonth() === mesIndex &&
+                    data.getFullYear() === ano
                 );
             })
             .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
