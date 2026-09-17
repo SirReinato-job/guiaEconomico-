@@ -14,13 +14,17 @@ import { useResumoEvitaveis } from "../../hooks/useResumoEvitaveis";
 import ListaProximosMeses from "../../components/ListaProximosMeses";
 import { useProjecaoSaldo } from "../../hooks/useProjecaoSaldo";
 import { useEssencial } from "../../context/EssencialContext";
+import { useMes } from "../../context/MesContext";
 
 export default function Home() {
-    const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
+    const {
+        destaque: destaqueEvitaveis,
+        nomesEvitaveis,
+        valoresEvitaveis,
+    } = useResumoEvitaveis();
     const { nomes, valores } = useResumoEssenciais();
+    const { nomeCartao, valorPorCartao, valorTotal } = useResumoCartoes();
     const { totalGeralGastos } = useResumoFinanceiro();
-    const { nomesEvitaveis, valoresEvitaveis, destaqueEvitaveis } =
-        useResumoEvitaveis();
 
     const {
         showModalGasto,
@@ -41,11 +45,13 @@ export default function Home() {
 
     const dadosProximosMeses = useProjecaoSaldo(3);
 
+    const { mesReferencia, nomeMesAno } = useMes() || {};
+    const dataRef = mesReferencia || new Date();
+
     const { getTotalEssenciais } = useEssencial();
-    const hoje = new Date();
     const totalEssenciaisMes = getTotalEssenciais(
-        hoje.getFullYear(),
-        hoje.getMonth()
+        dataRef.getFullYear(),
+        dataRef.getMonth()
     );
 
     return (
@@ -90,7 +96,11 @@ export default function Home() {
                     textDescricao={valorPorCartao}
                     onClick={() => setShowModalGasto(true)}
                 />
-                <Card $bgAlert titulo="Financeiro do Mês" destaque="50/30/20">
+                <Card
+                    $bgAlert
+                    titulo={`Financeiro (${nomeMesAno})`}
+                    destaque="50/30/20"
+                >
                     <GraficoComparativo />
                 </Card>
                 <Card

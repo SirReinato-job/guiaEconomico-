@@ -2,11 +2,15 @@ import { useGastos } from "../context/GastosContext";
 import { useSaldo } from "../context/SaldoContext";
 import { useResumoEssenciais } from "./useResumoEssencial";
 import { parseCurrency } from "../utils/currencyUtils";
+import { useMes } from "../context/MesContext";
 
 export function useResumoComparativo(ciclo = "atual") {
     const { gastos, getIntervaloFatura } = useGastos();
     const { saldo, getSalarioDoMes } = useSaldo();
+    const { mesReferencia } = useMes() || {};
     const { destaque: totalEssenciaisFormatado } = useResumoEssenciais();
+
+    const dataRef = mesReferencia || new Date();
 
     // Obtém o último salário registrado em saldo
     const ultimosSalarios = (saldo || [])
@@ -25,9 +29,8 @@ export function useResumoComparativo(ciclo = "atual") {
             ? parseCurrency(ultimosSalarios[0].valor)
             : 0;
 
-    const hoje = new Date();
     const salarioConfigurado = getSalarioDoMes
-        ? parseCurrency(getSalarioDoMes(hoje.getFullYear(), hoje.getMonth()))
+        ? parseCurrency(getSalarioDoMes(dataRef.getFullYear(), dataRef.getMonth()))
         : 0;
 
     const salario = salarioConfigurado > 0 ? salarioConfigurado : ultimoSalario;
@@ -64,7 +67,7 @@ export function useResumoComparativo(ciclo = "atual") {
 
             const { inicio, fim } = getIntervaloFatura(
                 gasto.cartao,
-                new Date(),
+                dataRef,
                 ciclo
             );
 

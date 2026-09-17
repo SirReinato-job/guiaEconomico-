@@ -2,11 +2,13 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { getSaldo, adicionarReceitaAPI } from "../services/saldoService";
 import { parseCurrency } from "../utils/currencyUtils";
+import { useMes } from "./MesContext";
 
 const SaldoContext = createContext();
 
 export function SaldoProvider({ children }) {
     const [saldo, setSaldo] = useState([]);
+    const { mesReferencia } = useMes() || {};
     const [salarioPadrao, setSalarioPadrao] = useState(); // valor recorrente padrão
     const [salariosPorMes, setSalariosPorMes] = useState({}); // ajustes por mês
 
@@ -38,16 +40,18 @@ export function SaldoProvider({ children }) {
         return salariosPorMes[`${ano}-${mes}`] ?? salarioPadrao;
     };
 
-    const getEntradasDoMes = () => {
-        const hoje = new Date();
-        const ano = hoje.getFullYear();
-        const mes = hoje.getMonth();
+    const getEntradasDoMes = (ref = mesReferencia) => {
+        const dataRef = ref || new Date();
+        const ano = dataRef.getFullYear();
+        const mes = dataRef.getMonth();
 
         const salario = parseCurrency(getSalarioDoMes(ano, mes));
 
         const total = saldo
             .filter((item) => {
-                const data = new Date(item.data);
+                const data = new Date(
+                    item.data?.includes("T") ? item.data : `${item.data}T12:00:00`
+                );
                 return data.getMonth() === mes && data.getFullYear() === ano;
             })
             .reduce((acc, item) => acc + parseCurrency(item.valor), 0);

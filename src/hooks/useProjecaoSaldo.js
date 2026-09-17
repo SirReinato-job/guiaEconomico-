@@ -3,13 +3,15 @@ import { useGastos } from "../context/GastosContext";
 import { useEssencial } from "../context/EssencialContext";
 import { getProximosMeses } from "../utils/proximoMesUtils";
 import { parseCurrency } from "../utils/currencyUtils";
+import { useMes } from "../context/MesContext";
 
 export function useProjecaoSaldo(qtd = 3) {
     const { saldo, getSalarioDoMes } = useSaldo();
     const { gastos } = useGastos();
     const { essenciais } = useEssencial();
+    const { mesReferencia } = useMes() || {};
 
-    const meses = getProximosMeses(qtd);
+    const meses = getProximosMeses(qtd, mesReferencia);
 
     // Obtém o último salário registrado
     const ultimosSalarios = (saldo || [])

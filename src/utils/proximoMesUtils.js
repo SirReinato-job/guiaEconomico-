@@ -1,6 +1,6 @@
 // utils/proximoMesUtils.js
-export function getProximosMeses(qtd = 3) {
-    const hoje = new Date();
+export function getProximosMeses(qtd = 3, dataReferencia = new Date()) {
+    const ref = dataReferencia || new Date();
     const meses = [
         "Janeiro",
         "Fevereiro",
@@ -17,7 +17,7 @@ export function getProximosMeses(qtd = 3) {
     ];
 
     return Array.from({ length: qtd }).map((_, i) => {
-        const data = new Date(hoje.getFullYear(), hoje.getMonth() + i + 1, 1);
+        const data = new Date(ref.getFullYear(), ref.getMonth() + i + 1, 1);
         return {
             mes: meses[data.getMonth()],
             ano: data.getFullYear(),

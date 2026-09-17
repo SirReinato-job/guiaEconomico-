@@ -1,16 +1,19 @@
 import { useGastos } from "../context/GastosContext";
 import { parseCurrency } from "../utils/currencyUtils";
+import { useMes } from "../context/MesContext";
 
 export function useResumoEvitaveis() {
     const { gastos } = useGastos();
+    const { mesReferencia } = useMes() || {};
 
-    const hoje = new Date();
-    const ano = hoje.getFullYear();
-    const mes = hoje.getMonth();
+    const dataRef = mesReferencia || new Date();
+    const ano = dataRef.getFullYear();
+    const mes = dataRef.getMonth();
 
     const agruparPorNome = gastos.reduce((acc, gasto) => {
         const { tipo, categoria, valor, data } = gasto;
-        const dataGasto = new Date(data);
+        if (!data) return acc;
+        const dataGasto = new Date(data.includes("T") ? data : `${data}T12:00:00`);
 
         const isDesejo = tipo === "Desejo";
         const isDoMes =

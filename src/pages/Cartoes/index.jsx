@@ -4,35 +4,56 @@ import Card, { Titulos } from "../../components/Card";
 import { useGastos } from "../../context/GastosContext";
 import { useState } from "react";
 import { parseCurrency } from "../../utils/currencyUtils";
+import { useMes } from "../../context/MesContext";
 
 export default function Cartoes() {
     const { getFaturaPorCartao, getGastosDoCiclo } = useGastos();
+    const {
+        nomeMesAno,
+        mesReferencia,
+        estaPago,
+        confirmarMesPago,
+        avancarMes,
+        voltarMes,
+    } = useMes();
 
     // estado para controlar ciclo ativo
     const [ciclo, setCiclo] = useState("atual");
 
-    const fatura = getFaturaPorCartao(ciclo);
+    const fatura = getFaturaPorCartao(ciclo, mesReferencia);
     const gastos = ["Nubank", "Picpay", "Banco do Brasil"].map((cartao) => ({
         cartao,
         valor: fatura[cartao] ? fatura[cartao].toFixed(2) : "0.00",
     }));
 
     // lista detalhada dos gastos do ciclo ativo
-    const gastosDoCiclo = getGastosDoCiclo("Nubank", ciclo)
-        .concat(getGastosDoCiclo("Picpay", ciclo))
-        .concat(getGastosDoCiclo("Banco do Brasil", ciclo));
-
-    const hoje = new Date();
-    const nomeMesAno = hoje.toLocaleDateString("pt-BR", {
-        month: "long",
-        year: "numeric",
-    });
+    const gastosDoCiclo = getGastosDoCiclo("Nubank", ciclo, mesReferencia)
+        .concat(getGastosDoCiclo("Picpay", ciclo, mesReferencia))
+        .concat(getGastosDoCiclo("Banco do Brasil", ciclo, mesReferencia));
 
     return (
         <ContainerLista>
-            <Titulos $titulo $tituloRoxo>
-                {nomeMesAno.charAt(0).toUpperCase() + nomeMesAno.slice(1)}
-            </Titulos>
+            <HeaderNavegacaoMes>
+                <BotaoNavegacao onClick={voltarMes} title="Mês anterior">
+                    ◀
+                </BotaoNavegacao>
+                <Titulos $titulo $tituloRoxo>
+                    {nomeMesAno}
+                </Titulos>
+                <BotaoNavegacao onClick={avancarMes} title="Próximo mês">
+                    ▶
+                </BotaoNavegacao>
+            </HeaderNavegacaoMes>
+
+            <BarraStatusMes>
+                {estaPago ? (
+                    <BadgePago>✓ Todas as contas deste mês foram pagas</BadgePago>
+                ) : (
+                    <BotaoConfirmarPago onClick={confirmarMesPago}>
+                        ✓ Confirmar tudo pago e avançar mês
+                    </BotaoConfirmarPago>
+                )}
+            </BarraStatusMes>
 
             {/* Filtro de ciclo */}
             <Filtro>
@@ -198,4 +219,74 @@ const Filtro = styled.div`
             color: ${({ theme }) => theme.colors.surface};
         }
     }
+`;
+
+const HeaderNavegacaoMes = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 4px;
+`;
+
+const BotaoNavegacao = styled.button`
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #00b3ff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+
+    &:hover {
+        background: #00b3ff;
+        color: #ffffff;
+        transform: scale(1.1);
+    }
+`;
+
+const BarraStatusMes = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+`;
+
+const BotaoConfirmarPago = styled.button`
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #ffffff;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.9em;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+    }
+`;
+
+const BadgePago = styled.div`
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-weight: bold;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 `;

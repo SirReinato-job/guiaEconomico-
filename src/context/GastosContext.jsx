@@ -6,11 +6,13 @@ import {
     removerGastoAPI,
 } from "../services/gastosService";
 import { parseCurrency } from "../utils/currencyUtils";
+import { useMes } from "./MesContext";
 
 const GastosContext = createContext();
 
 export function GastosProvider({ children }) {
     const [gastos, setGastos] = useState([]);
+    const { mesReferencia } = useMes() || {};
 
     useEffect(() => {
         async function carregar() {
@@ -110,11 +112,12 @@ export function GastosProvider({ children }) {
     // Intervalo de fatura (atual, anterior, próximo)
     function getIntervaloFatura(
         cartao,
-        referencia = new Date(),
+        referencia = mesReferencia || new Date(),
         ciclo = "atual"
     ) {
-        const ano = referencia.getFullYear();
-        const mes = referencia.getMonth();
+        const ref = referencia || mesReferencia || new Date();
+        const ano = ref.getFullYear();
+        const mes = ref.getMonth();
         const fechamento = FECHAMENTOS[cartao]?.diaFechamento ?? 30;
 
         if (ciclo === "atual") {
@@ -147,8 +150,8 @@ export function GastosProvider({ children }) {
     };
 
     // Gastos de um ciclo específico
-    function getGastosDoCiclo(cartao, ciclo = "atual") {
-        const { inicio, fim } = getIntervaloFatura(cartao, new Date(), ciclo);
+    function getGastosDoCiclo(cartao, ciclo = "atual", ref = mesReferencia) {
+        const { inicio, fim } = getIntervaloFatura(cartao, ref, ciclo);
         return gastos.filter((g) => {
             const data = parseDataSegura(g.data);
             return g.cartao === cartao && data && data >= inicio && data <= fim;
@@ -156,7 +159,7 @@ export function GastosProvider({ children }) {
     }
 
     // Fatura por cartão
-    function getFaturaPorCartao(ciclo = "atual") {
+    function getFaturaPorCartao(ciclo = "atual", ref = mesReferencia) {
         const totais = {};
         gastos.forEach((gasto) => {
             const cartao = gasto.cartao;
@@ -164,7 +167,7 @@ export function GastosProvider({ children }) {
             const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 cartao,
-                new Date(),
+                ref,
                 ciclo
             );
 
@@ -177,14 +180,14 @@ export function GastosProvider({ children }) {
     }
 
     // Fatura total (todos os cartões)
-    function getFaturaTotalCartao(ciclo = "atual") {
+    function getFaturaTotalCartao(ciclo = "atual", ref = mesReferencia) {
         let total = 0;
         gastos.forEach((gasto) => {
             const valor = parseCurrency(gasto.valor);
             const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 gasto.cartao,
-                new Date(),
+                ref,
                 ciclo
             );
 
@@ -196,14 +199,14 @@ export function GastosProvider({ children }) {
     }
 
     // Gastos por categoria (Essencial, Desejo, Poupança)
-    function getGastosPorCategoria(tipo, ciclo = "atual") {
+    function getGastosPorCategoria(tipo, ciclo = "atual", ref = mesReferencia) {
         let total = 0;
         gastos.forEach((gasto) => {
             if (gasto.tipo !== tipo) return;
             const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
                 gasto.cartao,
-                new Date(),
+                ref,
                 ciclo
             );
 
