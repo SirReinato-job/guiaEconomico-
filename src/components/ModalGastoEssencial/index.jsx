@@ -42,6 +42,7 @@ export default function ModalEssencial({ onClose }) {
                         <option value="aluguel">Aluguel</option>
                         <option value="agua">Água</option>
                         <option value="manutencao">Manutenção</option>
+                        <option value="pos-graduacao">Pós-graduação</option>
                     </select>
 
                     <Footer>
