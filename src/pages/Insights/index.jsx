@@ -27,7 +27,19 @@ export default function Insights() {
     const [filtroVisual, setFiltroVisual] = useState("todos"); // "todos" | "historico" | "projecao" | "marcos"
     const [termoBusca, setTermoBusca] = useState("");
 
+    // Modo de exibição: no mobile abre em 'cards' interativos por padrão, no desktop em 'tabela'
+    const [modoExibicao, setModoExibicao] = useState(() => {
+        if (typeof window !== "undefined" && window.innerWidth <= 768) {
+            return "cards";
+        }
+        return "tabela";
+    });
+
+    const [cardExpandido, setCardExpandido] = useState(null);
+    const [cardSlideAtivo, setCardSlideAtivo] = useState(0);
+
     const tabelaRef = useRef(null);
+    const metricasCarouselRef = useRef(null);
 
     // 1. Carregar configuração manual salva
     useEffect(() => {
@@ -133,7 +145,7 @@ export default function Insights() {
         marcos,
     } = resultadoCalculo;
 
-    // 5. Filtragem de exibição da tabela
+    // 5. Filtragem de exibição
     const linhasExibidas = useMemo(() => {
         return linhas.filter((item) => {
             if (termoBusca.trim() !== "") {
@@ -166,17 +178,22 @@ export default function Insights() {
         });
     }, [linhas, filtroVisual, termoBusca, marcos]);
 
-    // 6. Rolar para a linha indicada
+    // 6. Rolar para o item indicado (tabela ou card)
     const scrollToLinha = (dataStr) => {
         if (!dataStr) return;
-        // Se a linha não estiver visível devido ao filtro, reseta filtro
         if (filtroVisual !== "todos") {
             setFiltroVisual("todos");
         }
         setTermoBusca("");
 
+        // Se estiver no modo cards, expande o card do alvo para visualização imediata
+        if (modoExibicao === "cards") {
+            setCardExpandido(dataStr);
+        }
+
         setTimeout(() => {
-            const el = document.getElementById(`linha-${dataStr}`);
+            const prefixo = modoExibicao === "cards" ? "card-" : "linha-";
+            const el = document.getElementById(`${prefixo}${dataStr}`);
             if (el) {
                 el.scrollIntoView({ behavior: "smooth", block: "center" });
                 el.classList.add("destaque-temporario");
@@ -184,7 +201,21 @@ export default function Insights() {
                     el.classList.remove("destaque-temporario");
                 }, 2500);
             }
-        }, 100);
+        }, 120);
+    };
+
+    // Rastreamento do swipe no carrossel de métricas mobile
+    const handleScrollMetricas = () => {
+        if (metricasCarouselRef.current) {
+            const scrollLeft = metricasCarouselRef.current.scrollLeft;
+            const width = metricasCarouselRef.current.offsetWidth;
+            const index = Math.round(scrollLeft / (width * 0.85));
+            setCardSlideAtivo(Math.min(3, Math.max(0, index)));
+        }
+    };
+
+    const toggleCard = (data) => {
+        setCardExpandido((prev) => (prev === data ? null : data));
     };
 
     return (
@@ -194,7 +225,7 @@ export default function Insights() {
                 <div>
                     <TituloPrincipal>Insights Financeiros</TituloPrincipal>
                     <SubtituloPrincipal>
-                        Reserva de Emergência, Caixinha Nubank (100% CDI) e Projeção Patrimonial até os 100 Anos
+                        Reserva de Emergência, Caixinha Nubank (100% CDI) e Projeção até os 100 Anos
                     </SubtituloPrincipal>
                 </div>
 
@@ -209,113 +240,126 @@ export default function Insights() {
                 </HeaderNavegacaoMes>
             </HeaderSecao>
 
-            {/* Grid de Cards de Destaque */}
-            <GridCardsMetricas>
-                {/* Card 1: Saldo na Caixinha */}
-                <CardMetrica $bordaCor="#820ad1">
-                    <CardTop>
-                        <CardRotulo>Saldo Caixinha Nubank</CardRotulo>
-                        <BadgeNubank>100% CDI</BadgeNubank>
-                    </CardTop>
-                    <CardValor>{formatCurrency(saldoAtual)}</CardValor>
-                    <CardRodape>
-                        <CardDetalhe>
-                            Rendimento no mês:{" "}
-                            <TextoPositivo>
-                                + {formatCurrency(rendimentoAtual)}
-                            </TextoPositivo>
-                        </CardDetalhe>
-                        <BotaoAjustarSaldo
-                            type="button"
-                            onClick={() => setModalAberto(true)}
-                        >
-                            ✏️ Ajustar Saldo Real
-                        </BotaoAjustarSaldo>
-                    </CardRodape>
-                </CardMetrica>
-
-                {/* Card 2: Reserva de Emergência 6 Meses */}
-                <CardMetrica $bordaCor="#10b981">
-                    <CardTop>
-                        <CardRotulo>Reserva de Emergência</CardRotulo>
-                        <BadgeStatus $tipo={porcentagemMeta6Meses >= 100 ? "protegido" : "abaixo"}>
-                            {porcentagemMeta6Meses >= 100 ? "Protegido 🛡️" : "Em Construção 🏗️"}
-                        </BadgeStatus>
-                    </CardTop>
-                    <CardValor>
-                        {mesesProtegidosAtual}{" "}
-                        <SubTextoValor>/ 6 meses</SubTextoValor>
-                    </CardValor>
-                    <CardRodape>
-                        <BarraProgressoContainer>
-                            <BarraProgressoPreenchida
-                                $porcentagem={porcentagemMeta6Meses}
-                            />
-                        </BarraProgressoContainer>
-                        <CardDetalhe>
-                            Meta: <strong>{formatCurrency(meta6Meses)}</strong> ({porcentagemMeta6Meses}%)
-                        </CardDetalhe>
-                        {marcos.meta6Meses && (
+            {/* Grid de Cards de Destaque (Carrossel Horizontal no Mobile) */}
+            <CarrosselMetricasWrapper>
+                <GridCardsMetricas
+                    ref={metricasCarouselRef}
+                    onScroll={handleScrollMetricas}
+                >
+                    {/* Card 1: Saldo na Caixinha */}
+                    <CardMetrica $bordaCor="#820ad1">
+                        <CardTop>
+                            <CardRotulo>Saldo Caixinha Nubank</CardRotulo>
+                            <BadgeNubank>100% CDI</BadgeNubank>
+                        </CardTop>
+                        <CardValor>{formatCurrency(saldoAtual)}</CardValor>
+                        <CardRodape>
                             <CardDetalhe>
-                                {marcos.meta6Meses.atingido ? (
-                                    <span>✅ Atingido em <strong>{marcos.meta6Meses.mes}/{marcos.meta6Meses.data.slice(0, 4)}</strong></span>
-                                ) : (
-                                    <span>Previsão: <strong>{marcos.meta6Meses.mes}/{marcos.meta6Meses.data.slice(0, 4)}</strong> ({marcos.meta6Meses.idade} anos)</span>
-                                )}
+                                Rendimento no mês:{" "}
+                                <TextoPositivo>
+                                    + {formatCurrency(rendimentoAtual)}
+                                </TextoPositivo>
                             </CardDetalhe>
-                        )}
-                    </CardRodape>
-                </CardMetrica>
+                            <BotaoAjustarSaldo
+                                type="button"
+                                onClick={() => setModalAberto(true)}
+                            >
+                                ✏️ Ajustar Saldo Real
+                            </BotaoAjustarSaldo>
+                        </CardRodape>
+                    </CardMetrica>
 
-                {/* Card 3: Taxa Selic / CDI Oficial */}
-                <CardMetrica $bordaCor="#00b3ff">
-                    <CardTop>
-                        <CardRotulo>Taxa Selic / CDI</CardRotulo>
-                        <BadgeOficial>BCB SGS 432</BadgeOficial>
-                    </CardTop>
-                    <CardValor>
-                        {selicData.taxaAnual}%{" "}
-                        <SubTextoValor>a.a.</SubTextoValor>
-                    </CardValor>
-                    <CardRodape>
-                        <CardDetalhe>
-                            Mensal:{" "}
-                            <strong>
-                                {(selicData.taxaMensal * 100).toFixed(2)}% a.m.
-                            </strong>
-                        </CardDetalhe>
-                        <BotaoAtualizarTaxa
-                            type="button"
-                            onClick={handleAtualizarSelic}
-                            disabled={carregandoSelic}
-                        >
-                            {carregandoSelic ? "Consultando..." : "🔄 Atualizar BCB"}
-                        </BotaoAtualizarTaxa>
-                    </CardRodape>
-                </CardMetrica>
-
-                {/* Card 4: Previsão do 1º Milhão */}
-                <CardMetrica $bordaCor="#c084fc">
-                    <CardTop>
-                        <CardRotulo>Previsão 1º Milhão</CardRotulo>
-                        <BadgeMilhao>R$ 1.000.000</BadgeMilhao>
-                    </CardTop>
-                    <CardValor $cor="#c084fc">1º Milhão 🏆</CardValor>
-                    <CardRodape>
-                        {marcos.milhao1 ? (
+                    {/* Card 2: Reserva de Emergência 6 Meses */}
+                    <CardMetrica $bordaCor="#10b981">
+                        <CardTop>
+                            <CardRotulo>Reserva de Emergência</CardRotulo>
+                            <BadgeStatus $tipo={porcentagemMeta6Meses >= 100 ? "protegido" : "abaixo"}>
+                                {porcentagemMeta6Meses >= 100 ? "Protegido 🛡️" : "Em Construção 🏗️"}
+                            </BadgeStatus>
+                        </CardTop>
+                        <CardValor>
+                            {mesesProtegidosAtual}{" "}
+                            <SubTextoValor>/ 6 meses</SubTextoValor>
+                        </CardValor>
+                        <CardRodape>
+                            <BarraProgressoContainer>
+                                <BarraProgressoPreenchida
+                                    $porcentagem={porcentagemMeta6Meses}
+                                />
+                            </BarraProgressoContainer>
                             <CardDetalhe>
-                                Atingido em{" "}
+                                Meta: <strong>{formatCurrency(meta6Meses)}</strong> ({porcentagemMeta6Meses}%)
+                            </CardDetalhe>
+                            {marcos.meta6Meses && (
+                                <CardDetalhe>
+                                    {marcos.meta6Meses.atingido ? (
+                                        <span>✅ Atingido em <strong>{marcos.meta6Meses.mes}/{marcos.meta6Meses.data.slice(0, 4)}</strong></span>
+                                    ) : (
+                                        <span>Previsão: <strong>{marcos.meta6Meses.mes}/{marcos.meta6Meses.data.slice(0, 4)}</strong> ({marcos.meta6Meses.idade} anos)</span>
+                                    )}
+                                </CardDetalhe>
+                            )}
+                        </CardRodape>
+                    </CardMetrica>
+
+                    {/* Card 3: Taxa Selic / CDI Oficial */}
+                    <CardMetrica $bordaCor="#00b3ff">
+                        <CardTop>
+                            <CardRotulo>Taxa Selic / CDI</CardRotulo>
+                            <BadgeOficial>BCB SGS 432</BadgeOficial>
+                        </CardTop>
+                        <CardValor>
+                            {selicData.taxaAnual}%{" "}
+                            <SubTextoValor>a.a.</SubTextoValor>
+                        </CardValor>
+                        <CardRodape>
+                            <CardDetalhe>
+                                Mensal:{" "}
                                 <strong>
-                                    {marcos.milhao1.mes}/{marcos.milhao1.data.slice(0, 4)}
-                                </strong>{" "}
-                                aos <strong>{marcos.milhao1.idade} anos</strong>!
+                                    {(selicData.taxaMensal * 100).toFixed(2)}% a.m.
+                                </strong>
                             </CardDetalhe>
-                        ) : (
-                            <CardDetalhe>Calculando projeção...</CardDetalhe>
-                        )}
-                    </CardRodape>
-                </CardMetrica>
-            </GridCardsMetricas>
+                            <BotaoAtualizarTaxa
+                                type="button"
+                                onClick={handleAtualizarSelic}
+                                disabled={carregandoSelic}
+                            >
+                                {carregandoSelic ? "Consultando..." : "🔄 Atualizar BCB"}
+                            </BotaoAtualizarTaxa>
+                        </CardRodape>
+                    </CardMetrica>
+
+                    {/* Card 4: Previsão do 1º Milhão */}
+                    <CardMetrica $bordaCor="#c084fc">
+                        <CardTop>
+                            <CardRotulo>Previsão 1º Milhão</CardRotulo>
+                            <BadgeMilhao>R$ 1.000.000</BadgeMilhao>
+                        </CardTop>
+                        <CardValor $cor="#c084fc">1º Milhão 🏆</CardValor>
+                        <CardRodape>
+                            {marcos.milhao1 ? (
+                                <CardDetalhe>
+                                    Atingido em{" "}
+                                    <strong>
+                                        {marcos.milhao1.mes}/{marcos.milhao1.data.slice(0, 4)}
+                                    </strong>{" "}
+                                    aos <strong>{marcos.milhao1.idade} anos</strong>!
+                                </CardDetalhe>
+                            ) : (
+                                <CardDetalhe>Calculando projeção...</CardDetalhe>
+                            )}
+                        </CardRodape>
+                    </CardMetrica>
+                </GridCardsMetricas>
+
+                {/* Indicadores de Swipe (Mobile Dots) */}
+                <DotsMetricasMobile>
+                    <Dot $ativo={cardSlideAtivo === 0} />
+                    <Dot $ativo={cardSlideAtivo === 1} />
+                    <Dot $ativo={cardSlideAtivo === 2} />
+                    <Dot $ativo={cardSlideAtivo === 3} />
+                </DotsMetricasMobile>
+            </CarrosselMetricasWrapper>
 
             {/* Barra de Atalhos Rápidos para os Marcos */}
             <BarraAtalhos>
@@ -378,34 +422,51 @@ export default function Insights() {
                 </BotoesAtalhosGroup>
             </BarraAtalhos>
 
-            {/* Controles de Filtro e Busca da Tabela */}
+            {/* Alternador de Modo de Visualização (Cards vs Tabela) + Filtros */}
             <ControlesTabela>
-                <FiltrosTabs>
-                    <TabFiltro
-                        $ativo={filtroVisual === "todos"}
-                        onClick={() => setFiltroVisual("todos")}
-                    >
-                        Todos os Meses ({linhas.length})
-                    </TabFiltro>
-                    <TabFiltro
-                        $ativo={filtroVisual === "historico"}
-                        onClick={() => setFiltroVisual("historico")}
-                    >
-                        🏛️ Histórico Real
-                    </TabFiltro>
-                    <TabFiltro
-                        $ativo={filtroVisual === "projecao"}
-                        onClick={() => setFiltroVisual("projecao")}
-                    >
-                        🔮 Projeção Futura
-                    </TabFiltro>
-                    <TabFiltro
-                        $ativo={filtroVisual === "marcos"}
-                        onClick={() => setFiltroVisual("marcos")}
-                    >
-                        ⭐ Apenas Marcos
-                    </TabFiltro>
-                </FiltrosTabs>
+                <LinhaBotoesModo>
+                    <SeletorModoExibicao>
+                        <BotaoModo
+                            $ativo={modoExibicao === "cards"}
+                            onClick={() => setModoExibicao("cards")}
+                        >
+                            📱 Visão Cartões
+                        </BotaoModo>
+                        <BotaoModo
+                            $ativo={modoExibicao === "tabela"}
+                            onClick={() => setModoExibicao("tabela")}
+                        >
+                            📊 Visão Planilha
+                        </BotaoModo>
+                    </SeletorModoExibicao>
+
+                    <FiltrosTabs>
+                        <TabFiltro
+                            $ativo={filtroVisual === "todos"}
+                            onClick={() => setFiltroVisual("todos")}
+                        >
+                            Todos ({linhas.length})
+                        </TabFiltro>
+                        <TabFiltro
+                            $ativo={filtroVisual === "historico"}
+                            onClick={() => setFiltroVisual("historico")}
+                        >
+                            🏛️ Real
+                        </TabFiltro>
+                        <TabFiltro
+                            $ativo={filtroVisual === "projecao"}
+                            onClick={() => setFiltroVisual("projecao")}
+                        >
+                            🔮 Projeção
+                        </TabFiltro>
+                        <TabFiltro
+                            $ativo={filtroVisual === "marcos"}
+                            onClick={() => setFiltroVisual("marcos")}
+                        >
+                            ⭐ Marcos
+                        </TabFiltro>
+                    </FiltrosTabs>
+                </LinhaBotoesModo>
 
                 <CampoBusca
                     type="text"
@@ -415,71 +476,170 @@ export default function Insights() {
                 />
             </ControlesTabela>
 
-            {/* Tabela Dinâmica da Reserva de Emergência */}
-            <TabelaContainer ref={tabelaRef}>
-                <TabelaProjecao>
-                    <thead>
-                        <tr>
-                            <Th>Data</Th>
-                            <Th>Mês</Th>
-                            <Th>Idade</Th>
-                            <Th>Anos Decorridos</Th>
-                            <Th>Saldo Inicial</Th>
-                            <Th>Aporte / Poupança</Th>
-                            <Th>Taxa a.m.</Th>
-                            <Th>Rendimento</Th>
-                            <Th>Saldo Final</Th>
-                            <Th>Meses Protegidos</Th>
-                            <Th>Status / Marco</Th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {linhasExibidas.map((item) => {
-                            const dataFormatadaBR = item.data.split("-").reverse().join("/");
-                            return (
-                                <TrLinha
-                                    key={item.data}
-                                    id={`linha-${item.data}`}
-                                    $ehMesAtual={item.ehMesAtual}
-                                    $tipoMeta={item.statusMeta?.tipo}
-                                >
-                                    <Td>
-                                        <DataWrapper>
-                                            {dataFormatadaBR}
-                                            {item.ehMesAtual && (
-                                                <BadgeMesAtual>ATUAL</BadgeMesAtual>
-                                            )}
-                                        </DataWrapper>
-                                    </Td>
-                                    <TdMes>{item.mes}</TdMes>
-                                    <Td>{item.idade.toFixed(1)} anos</Td>
-                                    <Td>{item.anoDecorrido.toFixed(1)}</Td>
-                                    <TdValor>{formatCurrency(item.valorInicial)}</TdValor>
-                                    <TdPoupanca $negativo={item.poupanca < 0}>
-                                        {item.poupanca > 0 ? "+" : ""}
-                                        {formatCurrency(item.poupanca)}
-                                    </TdPoupanca>
-                                    <TdTaxa>{(item.taxa * 100).toFixed(2)}%</TdTaxa>
-                                    <TdRendimento>
-                                        +{formatCurrency(item.rendimento)}
-                                    </TdRendimento>
-                                    <TdSaldoFinal $tipoMeta={item.statusMeta?.tipo}>
-                                        {formatCurrency(item.valorFinal)}
-                                    </TdSaldoFinal>
-                                    <TdProtegido>
-                                        {item.mesesProtegidos.toFixed(1)}x
-                                    </TdProtegido>
-                                    <Td>
+            {/* ================= VISUALIZAÇÃO: MODO CARTÕES INTERATIVOS (FEED MOBILE) ================= */}
+            {modoExibicao === "cards" ? (
+                <FeedCardsMobile>
+                    {linhasExibidas.map((item) => {
+                        const dataFormatadaBR = item.data.split("-").reverse().join("/");
+                        const expandido = cardExpandido === item.data;
+                        return (
+                            <CardLinhaMobile
+                                key={item.data}
+                                id={`card-${item.data}`}
+                                $ehMesAtual={item.ehMesAtual}
+                                $tipoMeta={item.statusMeta?.tipo}
+                                onClick={() => toggleCard(item.data)}
+                            >
+                                <CardHeaderMobile>
+                                    <div>
+                                        <DataMesMobile>
+                                            <strong>{item.mes}</strong> {item.data.slice(0, 4)}
+                                        </DataMesMobile>
+                                        <SubinfoIdadeMobile>
+                                            {item.idade.toFixed(1)} anos • {dataFormatadaBR}
+                                        </SubinfoIdadeMobile>
+                                    </div>
+
+                                    <BadgesGroupMobile>
+                                        {item.ehMesAtual && (
+                                            <BadgeMesAtual>ATUAL</BadgeMesAtual>
+                                        )}
                                         <BadgeMeta $status={item.statusMeta}>
                                             {item.statusMeta?.label}
                                         </BadgeMeta>
-                                    </Td>
-                                </TrLinha>
-                            );
-                        })}
-                    </tbody>
-                </TabelaProjecao>
-            </TabelaContainer>
+                                    </BadgesGroupMobile>
+                                </CardHeaderMobile>
+
+                                <CardBodyMobile>
+                                    <BlocoSaldoMobile>
+                                        <RotuloMobile>Saldo na Caixinha</RotuloMobile>
+                                        <ValorSaldoMobile $tipoMeta={item.statusMeta?.tipo}>
+                                            {formatCurrency(item.valorFinal)}
+                                        </ValorSaldoMobile>
+                                    </BlocoSaldoMobile>
+
+                                    <GridPillsMobile>
+                                        <PillItemMobile>
+                                            <RotuloPill>Aporte / Poupança</RotuloPill>
+                                            <ValorPill $negativo={item.poupanca < 0}>
+                                                {item.poupanca > 0 ? "+" : ""}
+                                                {formatCurrency(item.poupanca)}
+                                            </ValorPill>
+                                        </PillItemMobile>
+
+                                        <PillItemMobile>
+                                            <RotuloPill>Rendimento do Mês</RotuloPill>
+                                            <ValorPill $negativo={false}>
+                                                +{formatCurrency(item.rendimento)}
+                                            </ValorPill>
+                                        </PillItemMobile>
+                                    </GridPillsMobile>
+                                </CardBodyMobile>
+
+                                {/* Gaveta de Detalhes Sanfona */}
+                                {expandido && (
+                                    <DetalhesGavetaMobile onClick={(e) => e.stopPropagation()}>
+                                        <ItemDetalheMobile>
+                                            <span>Saldo Inicial:</span>
+                                            <strong>{formatCurrency(item.valorInicial)}</strong>
+                                        </ItemDetalheMobile>
+                                        <ItemDetalheMobile>
+                                            <span>Taxa Selic / CDI:</span>
+                                            <strong style={{ color: "#38bdf8" }}>
+                                                {(item.taxa * 100).toFixed(2)}% a.m.
+                                            </strong>
+                                        </ItemDetalheMobile>
+                                        <ItemDetalheMobile>
+                                            <span>Meses Protegidos:</span>
+                                            <strong>{item.mesesProtegidos.toFixed(1)}x de salário</strong>
+                                        </ItemDetalheMobile>
+                                        <ItemDetalheMobile>
+                                            <span>Tempo Decorrido:</span>
+                                            <strong>{item.anoDecorrido.toFixed(1)} anos</strong>
+                                        </ItemDetalheMobile>
+                                        <ItemDetalheMobile>
+                                            <span>Origem dos Dados:</span>
+                                            <BadgeOrigem $ehHistorico={item.ehHistorico}>
+                                                {item.ehHistorico ? "🏛️ Planilha Real" : "🔮 Projeção Automática"}
+                                            </BadgeOrigem>
+                                        </ItemDetalheMobile>
+                                    </DetalhesGavetaMobile>
+                                )}
+
+                                <BotaoExpandirMobile>
+                                    {expandido ? "Menos Detalhes ▲" : "Mais Detalhes ▼"}
+                                </BotaoExpandirMobile>
+                            </CardLinhaMobile>
+                        );
+                    })}
+                </FeedCardsMobile>
+            ) : (
+                /* ================= VISUALIZAÇÃO: TABELA COMPLETA (PLANILHA) ================= */
+                <TabelaContainer ref={tabelaRef}>
+                    <TabelaProjecao>
+                        <thead>
+                            <tr>
+                                <Th>Data</Th>
+                                <Th>Mês</Th>
+                                <Th>Idade</Th>
+                                <Th>Anos Decorridos</Th>
+                                <Th>Saldo Inicial</Th>
+                                <Th>Aporte / Poupança</Th>
+                                <Th>Taxa a.m.</Th>
+                                <Th>Rendimento</Th>
+                                <Th>Saldo Final</Th>
+                                <Th>Meses Protegidos</Th>
+                                <Th>Status / Marco</Th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {linhasExibidas.map((item) => {
+                                const dataFormatadaBR = item.data.split("-").reverse().join("/");
+                                return (
+                                    <TrLinha
+                                        key={item.data}
+                                        id={`linha-${item.data}`}
+                                        $ehMesAtual={item.ehMesAtual}
+                                        $tipoMeta={item.statusMeta?.tipo}
+                                    >
+                                        <Td>
+                                            <DataWrapper>
+                                                {dataFormatadaBR}
+                                                {item.ehMesAtual && (
+                                                    <BadgeMesAtual>ATUAL</BadgeMesAtual>
+                                                )}
+                                            </DataWrapper>
+                                        </Td>
+                                        <TdMes>{item.mes}</TdMes>
+                                        <Td>{item.idade.toFixed(1)} anos</Td>
+                                        <Td>{item.anoDecorrido.toFixed(1)}</Td>
+                                        <TdValor>{formatCurrency(item.valorInicial)}</TdValor>
+                                        <TdPoupanca $negativo={item.poupanca < 0}>
+                                            {item.poupanca > 0 ? "+" : ""}
+                                            {formatCurrency(item.poupanca)}
+                                        </TdPoupanca>
+                                        <TdTaxa>{(item.taxa * 100).toFixed(2)}%</TdTaxa>
+                                        <TdRendimento>
+                                            +{formatCurrency(item.rendimento)}
+                                        </TdRendimento>
+                                        <TdSaldoFinal $tipoMeta={item.statusMeta?.tipo}>
+                                            {formatCurrency(item.valorFinal)}
+                                        </TdSaldoFinal>
+                                        <TdProtegido>
+                                            {item.mesesProtegidos.toFixed(1)}x
+                                        </TdProtegido>
+                                        <Td>
+                                            <BadgeMeta $status={item.statusMeta}>
+                                                {item.statusMeta?.label}
+                                            </BadgeMeta>
+                                        </Td>
+                                    </TrLinha>
+                                );
+                            })}
+                        </tbody>
+                    </TabelaProjecao>
+                </TabelaContainer>
+            )}
 
             {/* Modal de Ajuste de Saldo Real */}
             {modalAberto && (
@@ -511,12 +671,18 @@ const pulseGlow = keyframes`
 const ContainerInsights = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 24px 20px;
+    gap: 20px;
+    padding: 16px 8px;
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
     color: #e0e1dd;
+    box-sizing: border-box;
+
+    @media (min-width: 769px) {
+        padding: 24px 20px;
+        gap: 24px;
+    }
 `;
 
 const HeaderSecao = styled.div`
@@ -525,19 +691,28 @@ const HeaderSecao = styled.div`
     align-items: center;
     flex-wrap: wrap;
     gap: 16px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+    }
 `;
 
 const TituloPrincipal = styled.h1`
-    font-size: 1.85rem;
+    font-size: 1.5rem;
     font-weight: 800;
     margin: 0;
     background: linear-gradient(135deg, #f8fafc 0%, #00b3ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    @media (min-width: 769px) {
+        font-size: 1.85rem;
+    }
 `;
 
 const SubtituloPrincipal = styled.p`
-    font-size: 0.9rem;
+    font-size: 0.82rem;
     color: #94a3b8;
     margin: 4px 0 0 0;
 `;
@@ -545,6 +720,7 @@ const SubtituloPrincipal = styled.p`
 const HeaderNavegacaoMes = styled.div`
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 12px;
     background: #0d121f;
     border: 1px solid #1e293b;
@@ -558,7 +734,7 @@ const BotaoNavegacao = styled.button`
     color: #94a3b8;
     font-size: 1rem;
     cursor: pointer;
-    padding: 4px 8px;
+    padding: 6px 12px;
     border-radius: 6px;
     transition: all 0.15s ease;
 
@@ -577,10 +753,50 @@ const NomeMesLabel = styled.span`
     text-align: center;
 `;
 
+const CarrosselMetricasWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+
 const GridCardsMetricas = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 18px;
+
+    @media (max-width: 768px) {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 12px;
+        padding-bottom: 6px;
+        -webkit-overflow-scrolling: touch;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+        scrollbar-width: none;
+    }
+`;
+
+const DotsMetricasMobile = styled.div`
+    display: none;
+
+    @media (max-width: 768px) {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 4px;
+    }
+`;
+
+const Dot = styled.span`
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: ${({ $ativo }) => ($ativo ? "#820ad1" : "#1e293b")};
+    transition: all 0.2s ease;
+    ${({ $ativo }) => $ativo && "width: 18px; border-radius: 4px;"}
 `;
 
 const CardMetrica = styled.div`
@@ -595,6 +811,13 @@ const CardMetrica = styled.div`
     gap: 14px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    @media (max-width: 768px) {
+        min-width: 82vw;
+        scroll-snap-align: center;
+        flex-shrink: 0;
+        box-sizing: border-box;
+    }
 
     &:hover {
         transform: translateY(-2px);
@@ -762,6 +985,12 @@ const BarraAtalhos = styled.div`
     border: 1px solid #1e293b;
     border-radius: 12px;
     padding: 12px 18px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 12px;
+    }
 `;
 
 const TituloAtalhos = styled.span`
@@ -774,6 +1003,16 @@ const BotoesAtalhosGroup = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+
+    @media (max-width: 768px) {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+        &::-webkit-scrollbar {
+            display: none;
+        }
+    }
 `;
 
 const BotaoAtalho = styled.button`
@@ -782,6 +1021,7 @@ const BotaoAtalho = styled.button`
     border-radius: 8px;
     padding: 6px 12px;
     cursor: pointer;
+    white-space: nowrap;
     transition: all 0.15s ease;
 
     ${({ $tipo }) => {
@@ -831,15 +1071,53 @@ const ControlesTabela = styled.div`
     align-items: center;
     flex-wrap: wrap;
     gap: 14px;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: stretch;
+    }
+`;
+
+const LinhaBotoesModo = styled.div`
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    @media (max-width: 768px) {
+        justify-content: space-between;
+        width: 100%;
+    }
+`;
+
+const SeletorModoExibicao = styled.div`
+    display: flex;
+    background: #0d121f;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 3px;
+`;
+
+const BotaoModo = styled.button`
+    background: ${({ $ativo }) => ($ativo ? "#820ad1" : "transparent")};
+    color: ${({ $ativo }) => ($ativo ? "#ffffff" : "#94a3b8")};
+    border: none;
+    border-radius: 7px;
+    padding: 6px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
 `;
 
 const FiltrosTabs = styled.div`
     display: flex;
-    gap: 6px;
+    gap: 4px;
     background: #0d121f;
     border: 1px solid #1e293b;
     border-radius: 10px;
-    padding: 4px;
+    padding: 3px;
+    overflow-x: auto;
 `;
 
 const TabFiltro = styled.button`
@@ -847,10 +1125,11 @@ const TabFiltro = styled.button`
     color: ${({ $ativo }) => ($ativo ? "#f8fafc" : "#94a3b8")};
     border: none;
     border-radius: 6px;
-    padding: 6px 12px;
-    font-size: 0.8rem;
+    padding: 6px 10px;
+    font-size: 0.78rem;
     font-weight: 600;
     cursor: pointer;
+    white-space: nowrap;
     transition: all 0.15s ease;
 
     &:hover {
@@ -869,6 +1148,11 @@ const CampoBusca = styled.input`
     width: 260px;
     transition: all 0.2s ease;
 
+    @media (max-width: 768px) {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
     &:focus {
         border-color: #820ad1;
         box-shadow: 0 0 0 2px rgba(130, 10, 209, 0.2);
@@ -878,6 +1162,195 @@ const CampoBusca = styled.input`
         color: #64748b;
     }
 `;
+
+// ==================== STYLES DO FEED MOBILE (MODO CARTÕES) ====================
+
+const FeedCardsMobile = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+`;
+
+const CardLinhaMobile = styled.div`
+    background: #0d121f;
+    border: 1px solid #1e293b;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    ${({ $ehMesAtual }) =>
+        $ehMesAtual &&
+        css`
+            background: rgba(130, 10, 209, 0.16) !important;
+            border-color: #820ad1;
+            animation: ${pulseGlow} 2.5s infinite ease-in-out;
+        `}
+
+    &.destaque-temporario {
+        background: rgba(0, 179, 255, 0.25) !important;
+        border-color: #00b3ff;
+    }
+
+    &:active {
+        transform: scale(0.99);
+    }
+`;
+
+const CardHeaderMobile = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+`;
+
+const DataMesMobile = styled.div`
+    font-size: 1.05rem;
+    color: #f8fafc;
+    text-transform: capitalize;
+
+    strong {
+        color: #ffffff;
+    }
+`;
+
+const SubinfoIdadeMobile = styled.div`
+    font-size: 0.74rem;
+    color: #94a3b8;
+    margin-top: 2px;
+`;
+
+const BadgesGroupMobile = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 6px;
+`;
+
+const CardBodyMobile = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 0;
+    border-top: 1px solid #182238;
+    border-bottom: 1px solid #182238;
+`;
+
+const BlocoSaldoMobile = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+`;
+
+const RotuloMobile = styled.span`
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 500;
+`;
+
+const ValorSaldoMobile = styled.span`
+    font-size: 1.45rem;
+    font-weight: 800;
+    font-family: monospace;
+
+    ${({ $tipoMeta }) => {
+        switch ($tipoMeta) {
+            case "multimilhao":
+                return "color: #38bdf8;";
+            case "milhao":
+                return "color: #c084fc;";
+            case "protegido":
+                return "color: #34d399;";
+            default:
+                return "color: #fbbf24;";
+        }
+    }}
+`;
+
+const GridPillsMobile = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+`;
+
+const PillItemMobile = styled.div`
+    background: #131b2e;
+    border: 1px solid #1e293b;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+`;
+
+const RotuloPill = styled.span`
+    font-size: 0.68rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+`;
+
+const ValorPill = styled.span`
+    font-size: 0.88rem;
+    font-weight: 700;
+    font-family: monospace;
+    color: ${({ $negativo }) => ($negativo ? "#f87171" : "#34d399")};
+`;
+
+const DetalhesGavetaMobile = styled.div`
+    background: #090e1a;
+    border: 1px solid #1e293b;
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    animation: fadeIn 0.18s ease-out;
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+`;
+
+const ItemDetalheMobile = styled.div`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+
+    span {
+        color: #94a3b8;
+    }
+
+    strong {
+        color: #f1f5f9;
+        font-family: monospace;
+    }
+`;
+
+const BadgeOrigem = styled.span`
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: ${({ $ehHistorico }) => ($ehHistorico ? "rgba(148, 163, 184, 0.15)" : "rgba(0, 179, 255, 0.15)")};
+    color: ${({ $ehHistorico }) => ($ehHistorico ? "#94a3b8" : "#38bdf8")};
+    border: 1px solid ${({ $ehHistorico }) => ($ehHistorico ? "rgba(148, 163, 184, 0.3)" : "rgba(0, 179, 255, 0.3)")};
+`;
+
+const BotaoExpandirMobile = styled.div`
+    text-align: center;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    padding-top: 2px;
+`;
+
+// ==================== STYLES DA TABELA DESKTOP ====================
 
 const TabelaContainer = styled.div`
     width: 100%;
@@ -1033,6 +1506,7 @@ const BadgeMeta = styled.span`
     font-weight: 700;
     padding: 4px 9px;
     border-radius: 6px;
+    white-space: nowrap;
     color: ${({ $status }) => $status?.corTexto || "#94a3b8"};
     background: ${({ $status }) => $status?.corFundo || "transparent"};
     border: 1px solid ${({ $status }) => $status?.corBorda || "transparent"};
