@@ -10,8 +10,11 @@ import { formatCurrency, parseCurrency } from "../../utils/currencyUtils";
 import ModalAjusteReserva from "../../components/ModalAjusteReserva";
 import { useProjecaoSaldo } from "../../hooks/useProjecaoSaldo";
 import { useEssencial } from "../../context/EssencialContext";
+import { useAuth } from "../../context/AuthContext";
+import AcessoRestritoInsights from "../../components/AcessoRestritoInsights";
 
 export default function Insights() {
+    const { temAcessoInsights } = useAuth() || {};
     const { mesReferencia, nomeMesAno, voltarMes, avancarMes } = useMes() || {};
     const { getSalarioDoMes, getEntradasDoMes } = useSaldo() || {};
     const { saldoLiquido } = useResumoFinanceiro() || {};
@@ -45,8 +48,9 @@ export default function Insights() {
     const tabelaRef = useRef(null);
     const metricasCarouselRef = useRef(null);
 
-    // 1. Carregar configuração manual salva
+    // 1. Carregar configuração manual salva (apenas para o proprietário autorizado)
     useEffect(() => {
+        if (!temAcessoInsights) return;
         let isMounted = true;
         async function carregarConfig() {
             try {
@@ -62,7 +66,7 @@ export default function Insights() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [temAcessoInsights]);
 
     // 2. Carregar Selic oficial da API do BCB
     useEffect(() => {
@@ -148,8 +152,22 @@ export default function Insights() {
         return mapa;
     }, [projecoesFuturas]);
 
-    // 4. Executar cálculo de projeção matemática completa
+    // 4. Executar cálculo de projeção matemática completa (apenas para o proprietário)
     const resultadoCalculo = useMemo(() => {
+        if (!temAcessoInsights) {
+            return {
+                linhas: [],
+                salario: 0,
+                meta6Meses: 0,
+                saldoAtual: 0,
+                rendimentoAtual: 0,
+                mesesProtegidosAtual: 0,
+                porcentagemMeta6Meses: 0,
+                linhaAtual: null,
+                marcos: {},
+                taxaSelicMensal: 0,
+            };
+        }
         return gerarProjecaoReserva({
             salarioMensal: salarioAtual,
             saldoSobraMes: sobraMesAtual,
@@ -159,7 +177,7 @@ export default function Insights() {
             mapaProjecoes,
             totalEssenciais,
         });
-    }, [salarioAtual, sobraMesAtual, selicData.taxaMensal, configReserva, mesReferencia, mapaProjecoes, totalEssenciais]);
+    }, [temAcessoInsights, salarioAtual, sobraMesAtual, selicData.taxaMensal, configReserva, mesReferencia, mapaProjecoes, totalEssenciais]);
 
     const {
         linhas,
@@ -244,6 +262,11 @@ export default function Insights() {
     const toggleCard = (data) => {
         setCardExpandido((prev) => (prev === data ? null : data));
     };
+
+    // Se o usuário logado não for o proprietário autorizado, bloqueia a visualização da reserva
+    if (!temAcessoInsights) {
+        return <AcessoRestritoInsights />;
+    }
 
     return (
         <ContainerInsights>

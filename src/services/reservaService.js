@@ -1,5 +1,6 @@
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db, isFirebaseConfigured } from "../config/firebase";
+import { db, auth, isFirebaseConfigured } from "../config/firebase";
+import { isProprietarioInsights } from "../utils/permissoes";
 
 const STORAGE_KEY = "guia_reserva_config";
 const DOC_PATH = ["configuracoes", "reserva"];
@@ -8,6 +9,10 @@ const DOC_PATH = ["configuracoes", "reserva"];
  * Retorna as configurações e ajustes manuais da Reserva de Emergência.
  */
 export async function getReservaConfig() {
+    // Se o usuário logado não for o proprietário, bloqueia o acesso
+    if (auth?.currentUser && !isProprietarioInsights(auth.currentUser.email)) {
+        return {};
+    }
     let localConfig = null;
     try {
         const salvo = localStorage.getItem(STORAGE_KEY);
@@ -49,6 +54,11 @@ export async function getReservaConfig() {
  * @param {number|null} config.poupancaFixa - Valor fixo de aporte mensal futuro
  */
 export async function salvarReservaConfig(config) {
+    if (auth?.currentUser && !isProprietarioInsights(auth.currentUser.email)) {
+        console.warn("Acesso negado: apenas o proprietário autorizado pode salvar configurações da reserva.");
+        return null;
+    }
+
     const payload = {
         ...config,
         atualizadoEm: new Date().toISOString(),

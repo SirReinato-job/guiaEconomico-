@@ -21,7 +21,7 @@ export default function ContainerGeral() {
         adicionarEssencial,
     } = useShowModals();
 
-    const { user, logout } = useAuth();
+    const { user, logout, temAcessoInsights } = useAuth();
     const location = useLocation();
 
     const [menuAcoesAberto, setMenuAcoesAberto] = useState(false);
@@ -106,7 +106,7 @@ export default function ContainerGeral() {
                             💰 Saldos
                         </StyledLink>
                         <StyledLink to="/insights">
-                            🧠 Insights Financeiros
+                            {temAcessoInsights ? "🧠 Insights Financeiros" : "🔒 Insights (Restrito)"}
                         </StyledLink>
                         <StyledLink to="/configuracoes">
                             ⚙️ Configurações
@@ -183,8 +183,8 @@ export default function ContainerGeral() {
                         $ativo={location.pathname === "/insights"}
                         onClick={fecharMenusMobile}
                     >
-                        <BottomNavIcon>🧠</BottomNavIcon>
-                        <BottomNavText>Insights</BottomNavText>
+                        <BottomNavIcon>{temAcessoInsights ? "🧠" : "🔒"}</BottomNavIcon>
+                        <BottomNavText>{temAcessoInsights ? "Insights" : "Restrito"}</BottomNavText>
                     </BottomNavItem>
 
                     <BottomNavItem

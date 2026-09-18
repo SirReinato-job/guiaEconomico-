@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "../config/firebase";
+import { isProprietarioInsights } from "../utils/permissoes";
 
 const AuthContext = createContext();
 
@@ -76,6 +77,10 @@ export function AuthProvider({ children }) {
         }
     };
 
+    const temAcessoInsights = useMemo(() => {
+        return isProprietarioInsights(user?.email);
+    }, [user?.email]);
+
     return (
         <AuthContext.Provider
             value={{
@@ -85,6 +90,8 @@ export function AuthProvider({ children }) {
                 loginComGoogle,
                 logout,
                 isAuthorized: Boolean(user),
+                temAcessoInsights,
+                isProprietario: temAcessoInsights,
             }}
         >
             {children}
