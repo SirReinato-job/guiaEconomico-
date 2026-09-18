@@ -15,6 +15,28 @@ export function EssencialProvider({ children }) {
         async function carregar() {
             const dados = await getEssencial();
             setEssenciais(dados);
+
+            // Garante que pos-graduacao esteja inicializada no Firestore para persistência
+            const temPos = (dados || []).some(
+                (e) =>
+                    e.tipo?.toLowerCase().includes("pos") ||
+                    e.tipo?.toLowerCase().includes("pós")
+            );
+            if (!temPos && dados.length > 0) {
+                adicionarEssencialAPI({
+                    tipo: "pos-graduacao",
+                    valor: 0,
+                    data: new Date().toISOString().split("T")[0],
+                })
+                    .then((novo) => {
+                        if (novo) {
+                            setEssenciais((prev) => [...prev, novo]);
+                        }
+                    })
+                    .catch((err) =>
+                        console.warn("Auto-inicialização de pos-graduacao:", err)
+                    );
+            }
         }
         carregar();
     }, []);

@@ -1,6 +1,11 @@
 // context/SaldoContext.js
 import { createContext, useContext, useEffect, useState } from "react";
-import { getSaldo, adicionarReceitaAPI } from "../services/saldoService";
+import {
+    getSaldo,
+    adicionarReceitaAPI,
+    atualizarReceitaAPI,
+    removerReceitaAPI,
+} from "../services/saldoService";
 import { parseCurrency } from "../utils/currencyUtils";
 import { useMes } from "./MesContext";
 
@@ -25,6 +30,25 @@ export function SaldoProvider({ children }) {
         if (receitaSalva) {
             setSaldo((prev) => [...prev, receitaSalva]);
         }
+        return receitaSalva;
+    };
+
+    const atualizarReceita = async (id, dadosAtualizados) => {
+        const receitaAtualizada = await atualizarReceitaAPI(id, dadosAtualizados);
+        if (receitaAtualizada) {
+            setSaldo((prev) =>
+                prev.map((item) => (item.id === id ? { ...item, ...receitaAtualizada } : item))
+            );
+        }
+        return receitaAtualizada;
+    };
+
+    const removerReceita = async (id) => {
+        const sucesso = await removerReceitaAPI(id);
+        if (sucesso) {
+            setSaldo((prev) => prev.filter((item) => item.id !== id));
+        }
+        return sucesso;
     };
 
     // Ajustar salário de um mês específico
@@ -64,6 +88,8 @@ export function SaldoProvider({ children }) {
             value={{
                 saldo,
                 adicionarReceita,
+                atualizarReceita,
+                removerReceita,
                 getEntradasDoMes,
                 getSalarioDoMes,
                 ajustarSalarioMes,

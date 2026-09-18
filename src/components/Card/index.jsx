@@ -10,10 +10,24 @@ export default function Card({
     $bgClaro,
     $titulo,
     $tituloRoxo,
+    onClick,
     ...props
 }) {
     return (
-        <Container {...props} $bgClaro={$bgClaro} type="button">
+        <Container
+            {...props}
+            $bgClaro={$bgClaro}
+            $temClique={Boolean(onClick)}
+            onClick={onClick}
+            role={onClick ? "button" : undefined}
+            tabIndex={onClick ? 0 : undefined}
+            onKeyDown={(e) => {
+                if (onClick && (e.key === "Enter" || e.key === " ")) {
+                    e.preventDefault();
+                    onClick(e);
+                }
+            }}
+        >
             <HeaderCard>
                 <Titulos $titulo={$titulo} $tituloRoxo={$tituloRoxo}>
                     {titulo}
@@ -39,12 +53,12 @@ export default function Card({
                     )}
                 </CardCorpoDescricao>
             )}
-            {children}
+            {children && <CardCorpoConteudo>{children}</CardCorpoConteudo>}
         </Container>
     );
 }
 
-const Container = styled.button`
+const Container = styled.div`
     width: ${(props) => (props.$widthSm ? "32%" : "48%")};
     height: ${(props) => (props.$heightSm ? "100%" : "45%")};
     background-color: ${(props) =>
@@ -56,7 +70,7 @@ const Container = styled.button`
     padding: ${(props) =>
         props.$heightSm
             ? "8px 16px"
-            : props.$padding || "24px 32px"};
+            : props.$padding || "18px 24px"};
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     color: ${({ theme }) => theme.colors.textPrimary};
     transition: transform 0.2s;
@@ -64,12 +78,20 @@ const Container = styled.button`
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    min-height: 0;
 
-    cursor: pointer;
+    cursor: ${(props) => (props.$temClique ? "pointer" : "default")};
     border: none;
     text-align: left;
+
     &:hover {
-        transform: translateY(-1.5px);
+        ${(props) => props.$temClique && "transform: translateY(-1.5px);"}
+    }
+
+    @media (max-width: 768px) {
+        width: 100%;
+        height: ${(props) => (props.$heightSm ? "auto" : "280px")};
+        min-height: ${(props) => (props.$heightSm ? "auto" : "260px")};
     }
 `;
 
@@ -77,6 +99,7 @@ const HeaderCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
 `;
 
 export const Titulos = styled.h2`
@@ -103,9 +126,9 @@ const Destaque = styled.h2`
     border-radius: 12px;
     font-size: 1.5em;
     font-family: "Bebas Neue", sans-serif;
-    /* font-weight: bolder; */
     letter-spacing: 0.15em;
     white-space: nowrap;
+    flex-shrink: 0;
     background: ${({ $bgAlert }) =>
         $bgAlert
             ? "linear-gradient(to right, #820ad1, #00b3ff)"
@@ -120,13 +143,72 @@ const CardCorpoDescricao = styled.div`
     align-items: stretch;
     gap: 8px;
     margin-top: 12px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 6px;
+
+    /* Barra de rolagem estilizada e discreta: visível somente se houver overflow */
+    scrollbar-width: thin;
+    scrollbar-color: rgba(130, 10, 209, 0.5) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(130, 10, 209, 0.4);
+        border-radius: 6px;
+        transition: background 0.2s;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #820ad1;
+    }
 `;
+
+const CardCorpoConteudo = styled.div`
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(130, 10, 209, 0.5) transparent;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: rgba(130, 10, 209, 0.4);
+        border-radius: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+        background: #820ad1;
+    }
+`;
+
 const LinhaDescricao = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    /* margin-bottom: 4px; */
+    padding: 2px 0;
+    flex-shrink: 0;
 `;
 
 const TextTitulo = styled.h3`
@@ -134,6 +216,7 @@ const TextTitulo = styled.h3`
     letter-spacing: 0.1em;
     font-weight: bold;
 `;
+
 const TextDescricao = styled.p`
     font-size: 1.1em;
     letter-spacing: 0.1em;

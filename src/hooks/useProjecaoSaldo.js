@@ -58,7 +58,7 @@ export function useProjecaoSaldo(qtd = 3) {
             })
             .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
 
-        // saídas (gastos com cartão)
+        // saídas (gastos com cartão - excluindo Mozi e aplicando 50% em divididos)
         const saidas = (gastos || [])
             .filter((item) => {
                 const data = parseDataSegura(item.data);
@@ -68,24 +68,40 @@ export function useProjecaoSaldo(qtd = 3) {
                     data.getFullYear() === ano
                 );
             })
-            .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
+            .reduce((acc, item) => {
+                const responsavel = (item.responsavel || "meu").toLowerCase();
+                if (responsavel === "mozi") return acc;
+                const fator = responsavel === "dividido" ? 0.5 : 1.0;
+                return acc + parseCurrency(item.valor) * fator;
+            }, 0);
 
-        // essenciais
-        const essenciaisTotal = (essenciais || [])
-            .filter((item) => {
-                const data = parseDataSegura(item.data);
-                return (
-                    data &&
-                    data.getMonth() === mesIndex &&
-                    data.getFullYear() === ano
-                );
-            })
-            .reduce((acc, item) => acc + parseCurrency(item.valor), 0);
+        // essenciais (se houver lançamento específico no mês usa-o; caso contrário, usa a base fixa recorrente)
+        const essenciaisDoMes = (essenciais || []).filter((item) => {
+            const data = parseDataSegura(item.data);
+            return (
+                data &&
+                data.getMonth() === mesIndex &&
+                data.getFullYear() === ano
+            );
+        });
+
+        const essenciaisTotal =
+            essenciaisDoMes.length > 0
+                ? essenciaisDoMes.reduce(
+                      (acc, item) => acc + parseCurrency(item.valor),
+                      0
+                  )
+                : (essenciais || []).reduce(
+                      (acc, item) => acc + parseCurrency(item.valor),
+                      0
+                  );
 
         // saldo líquido do mês
-        const valor = salario + entradasExtras - (saidas + essenciaisTotal);
+        const valor = Number((salario + entradasExtras - (saidas + essenciaisTotal)).toFixed(2));
+        const strMes = String(mesIndex + 1).padStart(2, "0");
+        const chave = `${ano}-${strMes}`;
 
-        return { mes, valor };
+        return { mes, valor, ano, mesIndex, chave };
     });
 
     return Array.isArray(dados) ? dados : [];

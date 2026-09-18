@@ -59,6 +59,10 @@ export function useResumoComparativo(ciclo = "atual") {
         let total = 0;
 
         (gastos || []).forEach((gasto) => {
+            const responsavel = gasto.responsavel || "meu";
+            // Gastos da Mozi não entram no 50/30/20 do usuário
+            if (responsavel === "mozi") return;
+
             const tipoGasto = normalizarTipo(gasto.tipo);
             if (tipoGasto !== categoria) return;
 
@@ -72,7 +76,8 @@ export function useResumoComparativo(ciclo = "atual") {
             );
 
             if (inicio && fim && dataGasto >= inicio && dataGasto <= fim) {
-                total += parseCurrency(gasto.valor);
+                const fator = responsavel === "dividido" ? 0.5 : 1.0;
+                total += parseCurrency(gasto.valor) * fator;
             }
         });
 

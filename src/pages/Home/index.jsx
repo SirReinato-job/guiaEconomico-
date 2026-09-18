@@ -160,13 +160,26 @@ const ContainerGeralHome = styled.div`
     gap: ${({ theme }) => theme.spacing.sm};
     box-sizing: border-box;
     height: 100%;
+
+    @media (max-width: 768px) {
+        height: auto;
+        min-height: 100%;
+        padding-bottom: 32px;
+    }
 `;
+
 export const HeaderContainer = styled.div`
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
     height: 25%;
+
+    @media (max-width: 768px) {
+        height: auto;
+        flex-direction: column;
+        gap: 12px;
+    }
 `;
 
 const ContainerMainCards = styled.div`
@@ -177,4 +190,10 @@ const ContainerMainCards = styled.div`
     align-items: center;
     row-gap: 16px;
     height: 75%;
+
+    @media (max-width: 768px) {
+        height: auto;
+        flex-direction: column;
+        gap: 16px;
+    }
 `;

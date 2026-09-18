@@ -102,8 +102,8 @@ export default function ContainerGeral() {
                         <StyledButton onClick={() => setShowModalEssencial(true)}>
                             📉 Gastos Essenciais
                         </StyledButton>
-                        <StyledLink to="/comparativo">
-                            🧮 Comparativo
+                        <StyledLink to="/saldos">
+                            💰 Saldos
                         </StyledLink>
                         <StyledLink to="/insights">
                             🧠 Insights Financeiros
@@ -188,12 +188,12 @@ export default function ContainerGeral() {
                     </BottomNavItem>
 
                     <BottomNavItem
-                        to="/comparativo"
-                        $ativo={location.pathname === "/comparativo"}
+                        to="/saldos"
+                        $ativo={location.pathname === "/saldos" || location.pathname === "/comparativo"}
                         onClick={fecharMenusMobile}
                     >
-                        <BottomNavIcon>🧮</BottomNavIcon>
-                        <BottomNavText>50/30/20</BottomNavText>
+                        <BottomNavIcon>💰</BottomNavIcon>
+                        <BottomNavText>Saldos</BottomNavText>
                     </BottomNavItem>
                 </MobileBottomNav>
 

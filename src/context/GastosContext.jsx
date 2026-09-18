@@ -203,6 +203,9 @@ export function GastosProvider({ children }) {
     function getGastosPorCategoria(tipo, ciclo = "atual", ref = mesReferencia) {
         let total = 0;
         gastos.forEach((gasto) => {
+            const responsavel = gasto.responsavel || "meu";
+            if (responsavel === "mozi") return; // Gastos da Mozi não são despesas do usuário
+
             if (gasto.tipo !== tipo) return;
             const dataGasto = parseDataSegura(gasto.data);
             const { inicio, fim } = getIntervaloFatura(
@@ -212,7 +215,8 @@ export function GastosProvider({ children }) {
             );
 
             if (dataGasto && dataGasto >= inicio && dataGasto <= fim) {
-                total += parseCurrency(gasto.valor);
+                const fator = responsavel === "dividido" ? 0.5 : 1.0;
+                total += parseCurrency(gasto.valor) * fator;
             }
         });
         return total;

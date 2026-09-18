@@ -8,11 +8,15 @@ import { getReservaConfig, salvarReservaConfig } from "../../services/reservaSer
 import { gerarProjecaoReserva } from "../../utils/reservaCalculos";
 import { formatCurrency, parseCurrency } from "../../utils/currencyUtils";
 import ModalAjusteReserva from "../../components/ModalAjusteReserva";
+import { useProjecaoSaldo } from "../../hooks/useProjecaoSaldo";
+import { useEssencial } from "../../context/EssencialContext";
 
 export default function Insights() {
     const { mesReferencia, nomeMesAno, voltarMes, avancarMes } = useMes() || {};
     const { getSalarioDoMes, getEntradasDoMes } = useSaldo() || {};
     const { saldoLiquido } = useResumoFinanceiro() || {};
+    const { essenciais } = useEssencial() || {};
+    const projecoesFuturas = useProjecaoSaldo(36);
 
     const [selicData, setSelicData] = useState({
         taxaAnual: 11.15,
@@ -123,6 +127,27 @@ export default function Insights() {
         return isNaN(sobra) ? null : sobra;
     }, [saldoLiquido]);
 
+    // Despesas essenciais recorrentes base
+    const totalEssenciais = useMemo(() => {
+        return (essenciais || []).reduce(
+            (acc, item) => acc + parseCurrency(item.valor),
+            0
+        );
+    }, [essenciais]);
+
+    // Mapa de projeção de saldo líquido dos próximos meses (chave YYYY-MM -> valor)
+    const mapaProjecoes = useMemo(() => {
+        const mapa = {};
+        if (Array.isArray(projecoesFuturas)) {
+            projecoesFuturas.forEach((p) => {
+                if (p.chave) {
+                    mapa[p.chave] = p.valor;
+                }
+            });
+        }
+        return mapa;
+    }, [projecoesFuturas]);
+
     // 4. Executar cálculo de projeção matemática completa
     const resultadoCalculo = useMemo(() => {
         return gerarProjecaoReserva({
@@ -131,8 +156,10 @@ export default function Insights() {
             taxaSelicMensal: selicData.taxaMensal,
             configManual: configReserva,
             mesReferencia: mesReferencia || new Date(),
+            mapaProjecoes,
+            totalEssenciais,
         });
-    }, [salarioAtual, sobraMesAtual, selicData.taxaMensal, configReserva, mesReferencia]);
+    }, [salarioAtual, sobraMesAtual, selicData.taxaMensal, configReserva, mesReferencia, mapaProjecoes, totalEssenciais]);
 
     const {
         linhas,

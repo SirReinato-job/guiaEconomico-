@@ -1,20 +1,65 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Titulos } from "../Card";
 import { useEssencial } from "../../context/EssencialContext";
 
 export default function ModalEssencial({ onClose }) {
-    const { register, handleSubmit, reset } = useForm();
-    const { essenciais, atualizarEssencial } = useEssencial();
+    const { essenciais, atualizarEssencial, adicionarEssencial } = useEssencial();
+    const { register, handleSubmit, reset, watch, setValue } = useForm({
+        defaultValues: {
+            tipo: "aluguel",
+            valor: "",
+        },
+    });
 
-    const handleFormSubmit = (data) => {
-        // encontra o item pelo tipo
-        const item = essenciais.find((e) => e.tipo === data.tipo);
+    const tipoWatch = watch("tipo");
+
+    // Pré-preenche o valor cadastrado atualmente quando o usuário escolhe o tipo
+    useEffect(() => {
+        if (!tipoWatch) return;
+        const item = essenciais.find(
+            (e) =>
+                e.tipo?.toLowerCase() === tipoWatch?.toLowerCase() ||
+                (tipoWatch === "pos-graduacao" &&
+                    (e.tipo?.toLowerCase().includes("pos") ||
+                        e.tipo?.toLowerCase().includes("pós")))
+        );
+
+        if (item && item.valor !== undefined) {
+            setValue(
+                "valor",
+                String(item.valor).includes(",")
+                    ? String(item.valor)
+                    : Number(item.valor).toFixed(2).replace(".", ",")
+            );
+        } else {
+            setValue("valor", "");
+        }
+    }, [tipoWatch, essenciais, setValue]);
+
+    const handleFormSubmit = async (data) => {
+        const tipoAlvo = data.tipo;
+        const item = essenciais.find(
+            (e) =>
+                e.tipo?.toLowerCase() === tipoAlvo?.toLowerCase() ||
+                (tipoAlvo === "pos-graduacao" &&
+                    (e.tipo?.toLowerCase().includes("pos") ||
+                        e.tipo?.toLowerCase().includes("pós")))
+        );
+
         if (item) {
-            atualizarEssencial(item.id, {
+            await atualizarEssencial(item.id, {
                 ...item,
+                tipo: tipoAlvo,
                 valor: data.valor,
-                data: new Date().toISOString().split("T")[0], // atualiza data
+                data: new Date().toISOString().split("T")[0],
+            });
+        } else {
+            await adicionarEssencial({
+                tipo: tipoAlvo,
+                valor: data.valor,
+                data: new Date().toISOString().split("T")[0],
             });
         }
         reset();
@@ -30,20 +75,20 @@ export default function ModalEssencial({ onClose }) {
                 </Header>
 
                 <Form onSubmit={handleSubmit(handleFormSubmit)}>
+                    <label>Tipo</label>
+                    <select {...register("tipo", { required: true })}>
+                        <option value="aluguel">Aluguel</option>
+                        <option value="agua">Água</option>
+                        <option value="manutencao">Manutenção</option>
+                        <option value="pos-graduacao">Pós-graduação (Pós)</option>
+                    </select>
+
                     <label>Valor</label>
                     <input
                         type="text"
                         placeholder="R$ 0,00"
                         {...register("valor", { required: true })}
                     />
-
-                    <label>Tipo</label>
-                    <select {...register("tipo", { required: true })}>
-                        <option value="aluguel">Aluguel</option>
-                        <option value="agua">Água</option>
-                        <option value="manutencao">Manutenção</option>
-                        <option value="pos-graduacao">Pós-graduação</option>
-                    </select>
 
                     <Footer>
                         <button type="button" onClick={onClose}>
@@ -56,6 +101,7 @@ export default function ModalEssencial({ onClose }) {
         </Overlay>
     );
 }
+
 const Overlay = styled.div`
     position: fixed;
     top: 0;
@@ -76,6 +122,12 @@ const ModalContent = styled.div`
     width: 40%;
     max-width: 60%;
     border: 4px solid ${({ theme }) => theme.colors.secondary};
+
+    @media (max-width: 768px) {
+        width: 92%;
+        max-width: 95%;
+        padding: 16px;
+    }
 `;
 
 const Header = styled.div`

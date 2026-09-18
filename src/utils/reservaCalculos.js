@@ -38,6 +38,36 @@ export function calcularAnoDecorrido(dataStr) {
 }
 
 /**
+ * Retorna a chave YYYY-MM do mês anterior.
+ */
+export function getMesAnteriorChave(chave) {
+    if (!chave || typeof chave !== "string") return "";
+    const [anoStr, mesStr] = chave.split("-");
+    let ano = parseInt(anoStr, 10);
+    let mes = parseInt(mesStr, 10) - 1;
+    if (mes < 1) {
+        mes = 12;
+        ano--;
+    }
+    return `${ano}-${String(mes).padStart(2, "0")}`;
+}
+
+/**
+ * Retorna a chave YYYY-MM do mês seguinte.
+ */
+export function getMesSeguinteChave(chave) {
+    if (!chave || typeof chave !== "string") return "";
+    const [anoStr, mesStr] = chave.split("-");
+    let ano = parseInt(anoStr, 10);
+    let mes = parseInt(mesStr, 10) + 1;
+    if (mes > 12) {
+        mes = 1;
+        ano++;
+    }
+    return `${ano}-${String(mes).padStart(2, "0")}`;
+}
+
+/**
  * Gera a série completa mensal da Reserva de Emergência desde 01/09/2021
  * até os 100 anos de idade do usuário (01/09/2097).
  *
@@ -47,6 +77,8 @@ export function calcularAnoDecorrido(dataStr) {
  * @param {number} [params.taxaSelicMensal] - Taxa Selic mensal em decimal (ex: 0.0093 para 0.93% a.m.)
  * @param {Object} [params.configManual] - Ajustes manuais de saldo real, rendimento ou taxa
  * @param {Date} [params.mesReferencia] - Mês selecionado no app (padrão: mês atual)
+ * @param {Object} [params.mapaProjecoes] - Mapa de saldos projetados por chave YYYY-MM
+ * @param {number} [params.totalEssenciais] - Despesas essenciais recorrentes base
  */
 export function gerarProjecaoReserva({
     salarioMensal = 3000,
@@ -54,6 +86,8 @@ export function gerarProjecaoReserva({
     taxaSelicMensal = 0.0093,
     configManual = {},
     mesReferencia = new Date(),
+    mapaProjecoes = {},
+    totalEssenciais = 0,
 } = {}) {
     const salario = Number(salarioMensal) > 0 ? Number(salarioMensal) : 3000;
     const meta6Meses = salario * 6;
@@ -61,19 +95,26 @@ export function gerarProjecaoReserva({
     const anoRef = mesReferencia ? mesReferencia.getFullYear() : new Date().getFullYear();
     const mesRefIndex = mesReferencia ? mesReferencia.getMonth() : new Date().getMonth();
     const chaveMesAtual = `${anoRef}-${String(mesRefIndex + 1).padStart(2, "0")}`;
+    const chaveMesSeguinte = getMesSeguinteChave(chaveMesAtual);
 
     const taxaPadrao =
         configManual?.taxaManual !== undefined && configManual?.taxaManual !== null && configManual.taxaManual > 0
             ? Math.pow(1 + configManual.taxaManual / 100, 1 / 12) - 1
             : taxaSelicMensal || 0.0093;
 
-    // Poupança fixa configurada ou média
+    // Poupança base futura: se configurada manualmente, usa o valor fixo;
+    // caso contrário, calcula a sobra padrão esperada (salário - despesas essenciais recorrentes)
+    // NUNCA forçar 1000 arbitrário!
     const poupancaPadraoFutura =
-        configManual?.poupancaFixa !== undefined && configManual?.poupancaFixa !== null
+        configManual?.poupancaFixa !== undefined &&
+        configManual?.poupancaFixa !== null &&
+        configManual.poupancaFixa !== ""
             ? Number(configManual.poupancaFixa)
+            : totalEssenciais > 0
+            ? Number(Math.max(0, salario - totalEssenciais).toFixed(2))
             : saldoSobraMes !== null && saldoSobraMes !== undefined && Number(saldoSobraMes) > 0
             ? Number(saldoSobraMes)
-            : 1000.0;
+            : Number((salario * 0.4).toFixed(2));
 
     const linhas = [];
 
@@ -121,25 +162,45 @@ export function gerarProjecaoReserva({
         const strMes = String(mesCursorIndex + 1).padStart(2, "0");
         const dataStr = `${anoCursor}-${strMes}-01`;
         const chaveItem = `${anoCursor}-${strMes}`;
+        const chaveMesAnterior = getMesAnteriorChave(chaveItem);
         const ehMesAtual = chaveItem === chaveMesAtual;
+        const ehMesSeguinteAoAtual = chaveItem === chaveMesSeguinte;
 
         let valorInicial = valorAnterior;
         let poupanca = poupancaPadraoFutura;
         let taxa = taxaPadrao;
 
-        // Se este mês tiver aporte confirmado previamente gravado
-        const aporteConfirmado = configManual?.aportesConfirmados?.[chaveItem];
+        // 1. Prioridade máxima: Aporte confirmado manualmente no fechamento do mês
+        const aporteConfirmado =
+            configManual?.aportesConfirmados?.[chaveItem] ||
+            configManual?.aportesConfirmados?.[chaveMesAnterior];
+
         if (aporteConfirmado && aporteConfirmado.sobra !== undefined && aporteConfirmado.sobra !== null) {
             poupanca = Number(aporteConfirmado.sobra);
         } else if (ehMesAtual) {
-            // Se o mês atual estiver dentro do intervalo projetado e tiver sobra calculada
-            if (saldoSobraMes !== null && saldoSobraMes !== undefined) {
+            // 2. Se o mês da linha for o mês ativo atual do app e tiver saldo restante calculado
+            if (saldoSobraMes !== null && saldoSobraMes !== undefined && Number.isFinite(Number(saldoSobraMes))) {
                 poupanca = Number(saldoSobraMes);
             }
+        } else if (ehMesSeguinteAoAtual) {
+            // 3. O mês imediatamente seguinte ao mês ativo (ex: no ciclo de Setembro, a linha 01/10/2026):
+            // O valor do aporte/retirada no dia 1º é rigorosamente o que sobrou (ou faltou) no mês ativo anterior!
+            if (saldoSobraMes !== null && saldoSobraMes !== undefined && Number.isFinite(Number(saldoSobraMes))) {
+                poupanca = Number(saldoSobraMes);
+            } else if (mapaProjecoes[chaveMesAnterior] !== undefined && Number.isFinite(Number(mapaProjecoes[chaveMesAnterior]))) {
+                poupanca = Number(mapaProjecoes[chaveMesAnterior]);
+            }
+        } else if (mapaProjecoes[chaveMesAnterior] !== undefined && Number.isFinite(Number(mapaProjecoes[chaveMesAnterior]))) {
+            // 4. Meses futuros projetados pelo sistema (ex: 01/11 recebe sobra projetada de Outubro)
+            poupanca = Number(mapaProjecoes[chaveMesAnterior]);
+        } else if (mapaProjecoes[chaveItem] !== undefined && Number.isFinite(Number(mapaProjecoes[chaveItem]))) {
+            poupanca = Number(mapaProjecoes[chaveItem]);
         }
 
-        let rendimento = Number(((valorInicial + poupanca) * taxa).toFixed(2));
-        let valorFinal = Number((valorInicial + poupanca + rendimento).toFixed(2));
+        // Se o aporte for negativo (retirada por saldo negativo), subtrai do saldo e calcula rendimento sobre o restante
+        const baseParaRendimento = Math.max(0, valorInicial + poupanca);
+        let rendimento = Number((baseParaRendimento * taxa).toFixed(2));
+        let valorFinal = Number(Math.max(0, valorInicial + poupanca + rendimento).toFixed(2));
 
         if (ehMesAtual && configManual?.saldoReal !== undefined && configManual?.saldoReal !== null) {
             valorFinal = Number(configManual.saldoReal);

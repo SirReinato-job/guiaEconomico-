@@ -9,10 +9,12 @@ export function useResumoEvitaveis() {
     const dataRef = mesReferencia || new Date();
     const ano = dataRef.getFullYear();
     const mes = dataRef.getMonth();
-
     const agruparPorNome = (gastos || []).reduce((acc, gasto) => {
-        const { tipo, categoria, valor, data } = gasto;
+        const { tipo, categoria, valor, data, responsavel = "meu" } = gasto;
         if (!data) return acc;
+
+        // Gastos da Mozi não são despesas do usuário
+        if (responsavel === "mozi") return acc;
 
         const tipoNorm = (tipo || "")
             .toLowerCase()
@@ -27,7 +29,8 @@ export function useResumoEvitaveis() {
 
         if (isDesejo && isDoMes) {
             const cat = categoria || "Outros";
-            const valorNum = parseCurrency(valor);
+            const fator = responsavel === "dividido" ? 0.5 : 1.0;
+            const valorNum = parseCurrency(valor) * fator;
             acc[cat] = (acc[cat] || 0) + valorNum;
         }
 

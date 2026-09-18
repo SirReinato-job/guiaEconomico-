@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Titulos } from "../Card";
 import { parseCurrency } from "../../utils/currencyUtils";
+import { CATEGORIAS_PADRAO, normalizarCategoria } from "../../utils/categoriasGasto";
 
 export default function ModalEditarGasto({ gasto, onClose, onUpdate, onDelete }) {
     const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
@@ -14,27 +15,40 @@ export default function ModalEditarGasto({ gasto, onClose, onUpdate, onDelete })
             : Number(gasto.valor).toFixed(2).replace(".", ",")
         : "";
 
+    const { categoriaSelecionada: catInit, categoriaPersonalizada: catPersInit } =
+        normalizarCategoria(gasto?.categoria);
+
     const { register, handleSubmit, watch } = useForm({
         defaultValues: {
             data: gasto?.data || "",
             valor: valorInicial,
             responsavel: gasto?.responsavel || "meu",
             tipo: gasto?.tipo || "Desejo",
-            categoria: gasto?.categoria || "Alimentação",
+            categoria: catInit,
+            categoriaPersonalizada: catPersInit,
             cartao: gasto?.cartao || "Nubank",
         },
     });
 
     const valorWatch = watch("valor");
     const responsavelWatch = watch("responsavel");
+    const categoriaWatch = watch("categoria");
     const valorNumerico = parseCurrency(valorWatch);
 
     const handleFormSubmit = async (data) => {
+        let categoriaFinal = data.categoria;
+        if (data.categoria === "OUTRO") {
+            categoriaFinal = data.categoriaPersonalizada?.trim() || "Outros";
+        }
+
         const dadosAtualizados = {
             ...gasto,
             ...data,
+            categoria: categoriaFinal,
             valor: parseCurrency(data.valor),
         };
+        delete dadosAtualizados.categoriaPersonalizada;
+
         await onUpdate(gasto.id, dadosAtualizados);
         onClose();
     };
@@ -113,21 +127,26 @@ export default function ModalEditarGasto({ gasto, onClose, onUpdate, onDelete })
 
                     <label>Categoria</label>
                     <select {...register("categoria", { required: true })}>
-                        <option value="Poupança">Poupança</option>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Educação">Educação</option>
-                        <option value="Uber">Uber</option>
-                        <option value="Roupas">Roupas</option>
-                        <option value="Lanches">Lanches</option>
-                        <option value="Água">Água</option>
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Caixinha">Caixinha</option>
-                        <option value="Alimentação fora">Alimentação fora</option>
-                        <option value="Supermercado">Supermercado</option>
-                        <option value="Farmácia">Farmácia</option>
-                        <option value="Contas">Contas</option>
-                        <option value="Outros">Outros</option>
+                        {CATEGORIAS_PADRAO.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.label}
+                            </option>
+                        ))}
                     </select>
+
+                    {categoriaWatch === "OUTRO" && (
+                        <CampoPersonalizado>
+                            <label>Nome da Categoria Personalizada</label>
+                            <input
+                                type="text"
+                                placeholder="Digite o nome da categoria (ex: Dentista, Jogos, Livros...)"
+                                autoFocus
+                                {...register("categoriaPersonalizada", {
+                                    required: categoriaWatch === "OUTRO",
+                                })}
+                            />
+                        </CampoPersonalizado>
+                    )}
 
                     <label>Cartão</label>
                     <select {...register("cartao", { required: true })}>
@@ -182,6 +201,8 @@ const ModalContent = styled.div`
     border-radius: 18px;
     width: 90%;
     max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
     border: 2px solid ${({ theme }) => theme.colors.secondary || "#00b3ff"};
     box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
     box-sizing: border-box;
@@ -337,3 +358,33 @@ const BotaoExcluir = styled.button`
         color: #ffffff;
     }
 `;
+
+const CampoPersonalizado = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px dashed #00b3ff;
+
+    label {
+        font-size: 0.85em;
+        color: #e0f2fe;
+    }
+
+    input {
+        background-color: #0b1320;
+        color: #ffffff;
+        border: 1px solid #00b3ff;
+        border-radius: 6px;
+        padding: 8px;
+        font-size: 0.95em;
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 179, 255, 0.7);
+        }
+    }
+`;
+

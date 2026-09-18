@@ -2,23 +2,38 @@ import { useForm } from "react-hook-form";
 import styled from "styled-components";
 import { Titulos } from "../Card";
 import { parseCurrency } from "../../utils/currencyUtils";
+import { CATEGORIAS_PADRAO } from "../../utils/categoriasGasto";
 
 export default function ModalNovoGasto({ onClose, onSubmit }) {
     const { register, handleSubmit, reset, watch } = useForm({
         defaultValues: {
             parcelas: "1",
             responsavel: "meu",
+            categoria: "Supermercado",
+            categoriaPersonalizada: "",
         },
     });
 
     const valorWatch = watch("valor");
     const parcelasWatch = watch("parcelas");
     const responsavelWatch = watch("responsavel");
+    const categoriaWatch = watch("categoria");
     const numParcelas = parseInt(parcelasWatch, 10) || 1;
     const valorNumerico = parseCurrency(valorWatch);
 
     const handleFormSubmit = (data) => {
-        onSubmit(data);
+        let categoriaFinal = data.categoria;
+        if (data.categoria === "OUTRO") {
+            categoriaFinal = data.categoriaPersonalizada?.trim() || "Outros";
+        }
+
+        const payload = {
+            ...data,
+            categoria: categoriaFinal,
+        };
+        delete payload.categoriaPersonalizada;
+
+        onSubmit(payload);
         reset();
         onClose();
     };
@@ -106,24 +121,27 @@ export default function ModalNovoGasto({ onClose, onSubmit }) {
 
                     <label>Categoria</label>
                     <select {...register("categoria", { required: true })}>
-                        <option value="Poupança">Poupança</option>
-                        <option value="Lanches">Lanches</option>
-                        <option value="Alimentação">Alimentação</option>
-                        <option value="Educacao">Educação</option>
-                        <option value="Alura">Alura</option>
-                        <option value="Uber">Uber</option>
-                        <option value="Roupas">Roupas</option>
-                        <option value="Academia">Academia</option>
-                        <option value="Vivo">Vivo</option>
-                        <option value="Água">Água</option>
-                        <option value="Manutenção">Manutenção</option>
-                        <option value="Caixinha">Caixinha</option>
-                        <option value="Alimentação fora">Alimentação fora</option>
-                        <option value="Supermercado">Supermercado</option>
-                        <option value="Farmácia">Farmácia</option>
-                        <option value="Contas">Contas</option>
-                        <option value="Outros">Outros</option>
+                        {CATEGORIAS_PADRAO.map((cat) => (
+                            <option key={cat.id} value={cat.id}>
+                                {cat.label}
+                            </option>
+                        ))}
                     </select>
+
+                    {categoriaWatch === "OUTRO" && (
+                        <CampoPersonalizado>
+                            <label>Nome da Categoria Personalizada</label>
+                            <input
+                                type="text"
+                                placeholder="Digite o nome da categoria (ex: Dentista, Jogos, Livros...)"
+                                autoFocus
+                                {...register("categoriaPersonalizada", {
+                                    required: categoriaWatch === "OUTRO",
+                                })}
+                            />
+                        </CampoPersonalizado>
+                    )}
+
                     <label>Cartão</label>
                     <select {...register("cartao", { required: true })}>
                         <option value="Nubank">Nubank</option>
@@ -163,6 +181,14 @@ const ModalContent = styled.div`
     width: 40%;
     max-width: 60%;
     border: 4px solid ${({ theme }) => theme.colors.secondary};
+
+    @media (max-width: 768px) {
+        width: 92%;
+        max-width: 95%;
+        padding: 16px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
 `;
 
 const Header = styled.div`
@@ -259,4 +285,34 @@ const InfoMozi = styled.div`
     border: 1px solid rgba(244, 114, 182, 0.4);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 `;
+
+const CampoPersonalizado = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px dashed #00b3ff;
+
+    label {
+        font-size: 0.85em;
+        color: #e0f2fe;
+    }
+
+    input {
+        background-color: ${({ theme }) => theme.colors.background};
+        color: ${({ theme }) => theme.colors.surface};
+        border: 1px solid #00b3ff;
+        border-radius: 6px;
+        padding: 8px;
+        font-size: 0.95em;
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 179, 255, 0.7);
+        }
+    }
+`;
+
 
