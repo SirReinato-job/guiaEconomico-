@@ -5,6 +5,7 @@ import { useGastos } from "../../context/GastosContext";
 import { useState } from "react";
 import { parseCurrency } from "../../utils/currencyUtils";
 import { useMes } from "../../context/MesContext";
+import { useResumoFinanceiro } from "../../hooks/useResumoFinanceiro";
 import ModalEditarGasto from "../../components/ModalEditarGasto";
 
 export default function Cartoes() {
@@ -27,6 +28,7 @@ export default function Cartoes() {
     const [ciclo, setCiclo] = useState("atual");
     const [gastoParaEditar, setGastoParaEditar] = useState(null);
 
+    const { saldoLiquido } = useResumoFinanceiro();
     const fatura = getFaturaPorCartao(ciclo, mesReferencia);
     const gastos = ["Nubank", "Picpay", "Banco do Brasil"].map((cartao) => ({
         cartao,
@@ -56,7 +58,7 @@ export default function Cartoes() {
                 {estaPago ? (
                     <BadgePago>✓ Todas as contas deste mês foram pagas</BadgePago>
                 ) : (
-                    <BotaoConfirmarPago onClick={confirmarMesPago}>
+                    <BotaoConfirmarPago onClick={() => confirmarMesPago(parseFloat(saldoLiquido))}>
                         ✓ Confirmar tudo pago e avançar mês
                     </BotaoConfirmarPago>
                 )}

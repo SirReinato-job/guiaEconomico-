@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { salvarAporteMesConfirmado } from "../services/reservaService";
 
 const MesContext = createContext();
 
@@ -69,9 +70,16 @@ export function MesProvider({ children }) {
     const nomeMesAno = formatarMesAno(mesReferencia);
 
     // Confirma que tudo do mês foi pago e avança para o próximo mês
-    const confirmarMesPago = () => {
+    const confirmarMesPago = async (valorSobra = null) => {
         if (!mesesPagos.includes(chaveMesAtual)) {
             setMesesPagos((prev) => [...prev, chaveMesAtual]);
+        }
+        if (valorSobra !== null && !isNaN(valorSobra)) {
+            try {
+                await salvarAporteMesConfirmado(chaveMesAtual, valorSobra);
+            } catch (e) {
+                console.warn("Erro ao salvar aporte do mês na reserva:", e);
+            }
         }
         // Avança para o mês seguinte
         setMesReferencia(new Date(ano, mesIndex + 1, 1));
