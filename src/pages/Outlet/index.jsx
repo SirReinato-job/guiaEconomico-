@@ -4,6 +4,7 @@ import ModalNovoGasto from "../../components/ModalNovoGasto";
 import ModalReceita from "../../components/ModalReceita";
 import ModalEssencial from "../../components/ModalGastoEssencial";
 import { useShowModals } from "../../hooks/useShowModals";
+import { useAuth } from "../../context/AuthContext";
 
 export default function ContainerGeral() {
     const {
@@ -17,6 +18,8 @@ export default function ContainerGeral() {
         adicionarReceita,
         adicionarEssencial,
     } = useShowModals();
+
+    const { user, logout } = useAuth();
 
     return (
         <>
@@ -49,6 +52,33 @@ export default function ContainerGeral() {
                         <StyledLink to="/configuracoes">
                             ⚙️ Configurações
                         </StyledLink>
+
+                        {user && (
+                            <UserCard>
+                                {user.photoURL ? (
+                                    <UserAvatar
+                                        src={user.photoURL}
+                                        alt={user.displayName || "Usuário"}
+                                        referrerPolicy="no-referrer"
+                                    />
+                                ) : (
+                                    <UserAvatarPlaceholder>
+                                        {(user.displayName || user.email || "U")
+                                            .charAt(0)
+                                            .toUpperCase()}
+                                    </UserAvatarPlaceholder>
+                                )}
+                                <UserInfo>
+                                    <UserName>
+                                        {user.displayName || "Usuário"}
+                                    </UserName>
+                                    <UserEmail>{user.email}</UserEmail>
+                                </UserInfo>
+                                <BotaoSair onClick={logout}>
+                                    Sair 🚪
+                                </BotaoSair>
+                            </UserCard>
+                        )}
                     </NavCardContainer>
                 </NavContainer>
 
@@ -100,12 +130,13 @@ const NavContainer = styled.div`
     color: white;
     padding: 60px 8px;
 `;
+
 const NavCardContainer = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 20px;
     padding: 16px 8px;
     background-color: ${({ theme }) => theme.colors.cardsBg};
     border-radius: 16px;
@@ -133,6 +164,7 @@ export const StyledLink = styled(Link)`
         transform: scale(0.98);
     }
 `;
+
 export const StyledButton = styled.button`
     background: transparent;
     border: none;
@@ -153,6 +185,77 @@ export const StyledButton = styled.button`
 
     &:active {
         transform: scale(0.98);
+    }
+`;
+
+const UserCard = styled.div`
+    width: 100%;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+`;
+
+const UserAvatar = styled.img`
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid ${({ theme }) => theme.colors.secondary || "#00b3ff"};
+`;
+
+const UserAvatarPlaceholder = styled.div`
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #820ad1, #00b3ff);
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+`;
+
+const UserInfo = styled.div`
+    text-align: center;
+    width: 100%;
+    overflow: hidden;
+`;
+
+const UserName = styled.p`
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
+const UserEmail = styled.p`
+    font-size: 0.7rem;
+    color: #888888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+`;
+
+const BotaoSair = styled.button`
+    background-color: rgba(231, 76, 60, 0.15);
+    border: 1px solid rgba(231, 76, 60, 0.4);
+    color: #ff6b6b;
+    font-size: 0.8rem;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 90%;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background-color: rgba(231, 76, 60, 0.3);
+        transform: translateY(-1px);
     }
 `;
 
