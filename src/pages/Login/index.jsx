@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../context/AuthContext";
+import Logo from "../../components/Logo";
 
 export default function Login() {
     const { loginComGoogle, authError } = useAuth();
@@ -8,7 +9,7 @@ export default function Login() {
     return (
         <LoginContainer>
             <LoginCard>
-                <Logo />
+                <Logo size={85} showText={false} />
                 <Titulo>Guia Econômico</Titulo>
                 <Subtitulo>Controle Financeiro Pessoal & Previsibilidade</Subtitulo>
 
@@ -52,15 +53,6 @@ const LoginCard = styled.div`
     width: 100%;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     text-align: center;
-`;
-
-const Logo = styled.div`
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #820ad1, #00b3ff);
-    margin-bottom: 20px;
-    box-shadow: 0 0 24px rgba(130, 10, 209, 0.5);
 `;
 
 const Titulo = styled.h1`

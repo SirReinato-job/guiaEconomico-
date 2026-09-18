@@ -5,6 +5,7 @@ import ModalReceita from "../../components/ModalReceita";
 import ModalEssencial from "../../components/ModalGastoEssencial";
 import { useShowModals } from "../../hooks/useShowModals";
 import { useAuth } from "../../context/AuthContext";
+import Logo from "../../components/Logo";
 
 export default function ContainerGeral() {
     const {
@@ -27,7 +28,7 @@ export default function ContainerGeral() {
                 <NavContainer>
                     <NavCardContainer>
                         <Link to="/" style={{ textDecoration: "none" }}>
-                            <Logo />
+                            <Logo size={72} showText={true} />
                         </Link>
                         <StyledButton onClick={() => setShowModalSaldo(true)}>
                             ➕ Receita
@@ -284,11 +285,4 @@ const Footer = styled.div`
         background-clip: text;
         color: transparent;
     }
-`;
-
-const Logo = styled.div`
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: linear-gradient(to right, #820ad1, #00b3ff);
 `;
