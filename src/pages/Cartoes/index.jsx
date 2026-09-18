@@ -5,9 +5,15 @@ import { useGastos } from "../../context/GastosContext";
 import { useState } from "react";
 import { parseCurrency } from "../../utils/currencyUtils";
 import { useMes } from "../../context/MesContext";
+import ModalEditarGasto from "../../components/ModalEditarGasto";
 
 export default function Cartoes() {
-    const { getFaturaPorCartao, getGastosDoCiclo } = useGastos();
+    const {
+        getFaturaPorCartao,
+        getGastosDoCiclo,
+        atualizarGasto,
+        removerGasto,
+    } = useGastos();
     const {
         nomeMesAno,
         mesReferencia,
@@ -19,6 +25,7 @@ export default function Cartoes() {
 
     // estado para controlar ciclo ativo
     const [ciclo, setCiclo] = useState("atual");
+    const [gastoParaEditar, setGastoParaEditar] = useState(null);
 
     const fatura = getFaturaPorCartao(ciclo, mesReferencia);
     const gastos = ["Nubank", "Picpay", "Banco do Brasil"].map((cartao) => ({
@@ -116,7 +123,9 @@ export default function Cartoes() {
                                     <BadgeResponsavel $tipo="dividido">🤝 50% Mozi</BadgeResponsavel>
                                 )}
                             </Coluna>
-                            <BotaoEditar>Editar</BotaoEditar>
+                            <BotaoEditar onClick={() => setGastoParaEditar(gasto)}>
+                                Editar
+                            </BotaoEditar>
                         </ItemGasto>
                     ))
                 ) : (
@@ -125,6 +134,15 @@ export default function Cartoes() {
                     </p>
                 )}
             </ListaGastos>
+
+            {gastoParaEditar && (
+                <ModalEditarGasto
+                    gasto={gastoParaEditar}
+                    onClose={() => setGastoParaEditar(null)}
+                    onUpdate={atualizarGasto}
+                    onDelete={removerGasto}
+                />
+            )}
         </ContainerLista>
     );
 }
